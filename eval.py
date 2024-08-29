@@ -1,67 +1,89 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch.utils.data import DataLoader
-from torchvision import transforms, models
-from torchvision.datasets import VOCSegmentation
-from dataset import LandslideDataset
+from torch.utils.data import DataLoader, TensorDataset
+from unet import UNet  # 假设UNet模型定义在unet.py中
+import data  # 你的数据预处理脚本
 
-# 1. 定义数据预处理和数据加载
-transform = transforms.Compose([
-    transforms.Resize((256, 256)),
-    transforms.ToTensor()
-])
+# 检查是否有可用的GPU
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+print(device)
+# 加载和预处理数据
+image_dir = 'E:\数据集\山体滑坡数据集\landslide\image/'
+label_dir = 'E:\数据集\山体滑坡数据集\landslide\mask/'
 
-train_dataset = VOCSegmentation(root='data', year='2012', image_set='train', download=True, transform=transform)
-train_loader = DataLoader(train_dataset, batch_size=4, shuffle=True, num_workers=4)
+augmentation_pipeline = data.get_augmentation_pipeline()
+images, labels = data.load_and_preprocess_data(image_dir, label_dir, augmentation_pipeline)
 
-# 2. 定义模型
-class FCN(nn.Module):
-    def __init__(self, num_classes):
-        super(FCN, self).__init__()
-        vgg16 = models.vgg16(pretrained=True)
-        self.features = vgg16.features
-        self.conv1x1 = nn.Conv2d(512, num_classes, kernel_size=1)
-        self.upsample = nn.Sequential(
-            nn.ConvTranspose2d(num_classes, num_classes, kernel_size=4, stride=2, padding=1),
-            nn.ReLU(inplace=True),
-            nn.ConvTranspose2d(num_classes, num_classes, kernel_size=4, stride=2, padding=1),
-            nn.ReLU(inplace=True)
-        )
-        
-    def forward(self, x):
-        x = self.features(x)
-        x = self.conv1x1(x)
-        x = self.upsample(x)
-        return x
+# 创建数据加载器
+dataset = TensorDataset(torch.tensor(images, dtype=torch.float32), torch.tensor(labels, dtype=torch.float32))
+dataloader = DataLoader(dataset, batch_size=4,num_workers=0, shuffle=True) # 根据需要调整批量大小
 
-num_classes = 21
-model = FCN(num_classes=num_classes).cuda()  # 如果使用GPU，调用`.cuda()`
-
-# 3. 定义损失函数和优化器
-criterion = nn.CrossEntropyLoss()
+# 定义UNet模型并将其移动到GPU
+model = UNet(in_channels=3, out_channels=1).to(device)
+criterion = nn.BCEWithLogitsLoss()
 optimizer = optim.Adam(model.parameters(), lr=1e-4)
 
-# 4. 训练模型
+# 训练循环
 num_epochs = 10
 for epoch in range(num_epochs):
     model.train()
     running_loss = 0.0
-    
-    for images, labels in train_loader:
-        images, labels = images.cuda(), labels.cuda()
+    for images, labels in dataloader:
+        images, labels = images.to(device), labels.to(device)
         
         optimizer.zero_grad()
         
         outputs = model(images)
         loss = criterion(outputs, labels)
-        
         loss.backward()
         optimizer.step()
         
         running_loss += loss.item()
     
-    print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {running_loss / len(train_loader):.4f}')
+    print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {running_loss/len(dataloader)}')
+torch.save(model.state_dict(), 'models_building_51.pth')
 
-# 保存训练好的模型
-torch.save(model.state_dict(), 'fcn_model.pth')
+print('Training completed.')
+
+#  import torch
+# import torch.nn as nn
+# import torch.optim as optim
+# from torch.utils.data import DataLoader, TensorDataset
+# from unet import UNet  # 假设UNet模型定义在unet.py中
+# import data  # 你的数据预处理脚本
+
+# # 加载和预处理数据
+# image_dir = 'E:\数据集\山体滑坡数据集\landslide\image/'
+# label_dir = 'E:\数据集\山体滑坡数据集\landslide\mask/'
+
+# augmentation_pipeline = data.get_augmentation_pipeline()
+# images, labels = data.load_and_preprocess_data(image_dir, label_dir, augmentation_pipeline)
+
+# # 创建数据加载器
+# dataset = TensorDataset(torch.tensor(images, dtype=torch.float32), torch.tensor(labels, dtype=torch.float32))
+# dataloader = DataLoader(dataset, batch_size=8, shuffle=True)  # 根据需要调整批量大小
+
+# # 定义UNet模型
+# model = UNet(in_channels=3, out_channels=1)  # 这里的输入通道和输出通道数需要根据实际情况设置
+# criterion = nn.BCEWithLogitsLoss()  # 二元交叉熵损失
+# optimizer = optim.Adam(model.parameters(), lr=1e-4)  # Adam优化器
+
+# # 训练循环
+# num_epochs = 10
+# for epoch in range(num_epochs):
+#     model.train()
+#     running_loss = 0.0
+#     for images, labels in dataloader:
+#         optimizer.zero_grad()
+        
+#         outputs = model(images)
+#         loss = criterion(outputs, labels)
+#         loss.backward()
+#         optimizer.step()
+        
+#         running_loss += loss.item()
+    
+#     print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {running_loss/len(dataloader)}')
+
+# print('Training completed.')

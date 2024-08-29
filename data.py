@@ -81,3 +81,5 @@ images, labels = load_and_preprocess_data(image_dir, label_dir, augmentation_pip
 print(f'Loaded and preprocessed {len(images)} images and {len(labels)} labels with augmentation.')
 print(f'Image shape: {images[0].shape}')
 print(f'Label shape: {labels[0].shape}')
+
+
