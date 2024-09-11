@@ -50,11 +50,11 @@ def batch_predict_and_save(image_dir, output_dir, model, threshold=0.8):
 
 # 初始化模型
 model = UNet(3, 1)
-model.load_state_dict(torch.load('E:\\repository\\新建文件夹\\models_building_500.pth'))
+model.load_state_dict(torch.load('E:\\repository\\weights\\models_building_500.pth'))
 model.eval()
 
 # 图像输入目录和预测输出目录
-image_dir = 'E:\\数据集\\山体滑坡数据集\\landslide\\image3'
+image_dir = 'E:\\数据集\\landslide4sense2022\\train\\images'
 output_dir = 'predictions2'
 
 # 批量预测和保存
