@@ -47,9 +47,9 @@ class UNet(nn.Module):
         dec3 = self.dec3(torch.cat([enc3, self.crop_and_concat(self.up(dec4), enc3)], 1))
         dec2 = self.dec2(torch.cat([enc2, self.crop_and_concat(self.up(dec3), enc2)], 1))
         dec1 = self.dec1(torch.cat([enc1, self.crop_and_concat(self.up(dec2), enc1)], 1))
-        final = self.final(dec1).squeeze()
+        final = self.final(dec1)
 
-        return torch.sigmoid(final)
+        return torch.sigmoid(final).squeeze(1)
     def crop_and_concat(self, upsampled, bypass):
         # 计算要裁剪的边界
         diffY = bypass.size()[2] - upsampled.size()[2]
@@ -59,3 +59,20 @@ class UNet(nn.Module):
         upsampled = torch.nn.functional.pad(upsampled, [diffX // 2, diffX - diffX // 2, diffY // 2, diffY - diffY // 2])
 
         return upsampled
+        
+
+
+# 创建模型实例
+input_channels = 3  # 输入通道，例如 RGB 图像
+output_channels = 1  # 输出通道，例如单通道分割图
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+model = UNet(input_channels, output_channels).to(device)
+
+# 创建随机输入数据 (例如：batch_size=1, height=256, width=256)
+input_data = torch.randn(1,input_channels ,256, 256).to(device)
+
+# 将输入数据传入模型并获取输出
+output = model(input_data)
+
+# 输出结果的形状
+print(output.shape)

@@ -6,13 +6,13 @@ import matplotlib.pyplot as plt
 from data import train_loader,valid_loader
 from model import UNet
 
-# 假设 unet_model 已经定义为一个 PyTorch 模型
-model = UNet(3,1)  # 根据需要定义模型输入尺寸
-model.train()
 
+model = UNet(img_channels=7, output_channels=1)  
+model.train()
 # 设置设备
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model.to(device)
+
 
 # 定义损失函数和优化器
 criterion = nn.CrossEntropyLoss()  # 根据任务调整损失函数

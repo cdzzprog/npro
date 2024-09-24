@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import torch
 from torch.utils.data import DataLoader, TensorDataset
 from sklearn.model_selection import train_test_split
-from dataset import TRAIN_XX, TRAIN_YY
+from dataset0 import TRAIN_XX, TRAIN_YY
 
 # 将数据转换为 PyTorch 张量
 X_tensor = torch.tensor(TRAIN_XX, dtype=torch.float32)
@@ -17,8 +17,8 @@ train_dataset = TensorDataset(x_train, y_train)
 valid_dataset = TensorDataset(x_valid, y_valid)
 
 # 创建 DataLoader
-train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-valid_loader = DataLoader(valid_dataset, batch_size=32, shuffle=False)
+train_loader = DataLoader(train_dataset,batch_size=16, shuffle=True)
+valid_loader = DataLoader(valid_dataset,batch_size=16, shuffle=False)
 
 # 示例：遍历 DataLoader
 for batch_X, batch_Y in train_loader:

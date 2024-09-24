@@ -7,7 +7,6 @@ fig, axs = plt.subplots(1, 6, figsize=(15, 10))
 axs[0].set_title("RGB")
 axs[0].imshow(TRAIN_XX[img, :, :, 0:3] * 255)  # 乘以255以恢复到0-255范围  # 假设RGB通道分别在0, 1, 2通道
 axs[0].axis('off')
-# 绘制NDVI图像
 axs[1].set_title("elevation")
 axs[1].imshow(TRAIN_XX[img, :, :, 3],cmap='gray')  # 假设高程在第3个通道
 axs[1].axis('off')
