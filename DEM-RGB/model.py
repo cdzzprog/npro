@@ -71,7 +71,10 @@ class UNet(nn.Module):
         # print(f"dec1 shape: {dec1.shape}")
 
         output = self.final_conv(dec1)
+   
+
         return output
+         
 
 
 # # 测试模型
