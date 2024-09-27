@@ -3,7 +3,8 @@ import imageio
 import glob
 from skimage.transform import resize
 from numpy import gradient
-
+import cv2
+import imageio.v2 as imageio
 TRAIN_PATH = r"E:\数据集\山体滑坡数据集\landslide\image\*.png"
 TRAIN_MASK = r"E:\数据集\山体滑坡数据集\landslide\mask\*.png"
 TRAIN_DEM = r"E:\\数据集\\山体滑坡数据集\\landslide\\dem\\*.png"
@@ -30,8 +31,31 @@ for i, (img_path, mask_path) in enumerate(zip(all_train, all_mask)):
     mask_data = imageio.imread(mask_path)
     mask_data = resize(mask_data, (256, 256), anti_aliasing=True)
     TRAIN_YY[i, :, :, 0] = mask_data
+    # mask_data = (mask_data >0).astype(np.float32)
+    # mask_data = (mask_data/255).astype(np.float32)
+    # print(mask_data)
+    # import matplotlib.pyplot as plt
+    # plt.hist(mask_data.flatten(), bins=50)
+    # plt.title("Pixel Value Distribution")
+    # plt.xlabel("Pixel Value")
+    # plt.ylabel("Frequency")
+    # plt.show()
+    # 检查矩阵中是否存在 1
+    # if np.any(mask_data == 1):
+    #     print("Matrix contains 1s")
+    # else:
+    #     print("No 1s found in the matrix")
 
+    # print(np.unique(mask_data))
+    # # print(np.min(mask_data), np.max(mask_data))
+    # # mask_data = (mask_data/255).astype(np.float32)
+    # # mask_data_normalized = (mask_data/255).astype(np.float32)
+    # print(mask_data)
+    # TRAIN_YY[i, :, :, 0] = mask_data
+    # print(TRAIN_YY[i, :, :, 0])
 # 处理DEM数据
+
+
 for i, dem_file in enumerate(all_dem):
     dem_data = imageio.imread(dem_file)  # 读取DEM图像
     dem_data = resize(dem_data, (256, 256), anti_aliasing=True)  # 调整为256x256

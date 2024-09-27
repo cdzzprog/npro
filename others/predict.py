@@ -13,6 +13,14 @@ model = UNet(in_channels=3, out_channels=1).to(device)
 model.load_state_dict(torch.load('models_building_51.pth'))
 model.eval()
 
+
+
+
+
+
+
+
+
 # 预测函数
 def predict_image(image_path, model, device, transform=None):
     # 加载并预处理图片

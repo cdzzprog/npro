@@ -17,7 +17,7 @@ model.to(device)
 # 定义损失函数和优化器
 # criterion = nn.CrossEntropyLoss()  # 根据任务调整损失函数
 criterion = nn.BCEWithLogitsLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.001)
+optimizer = optim.SGD(model.parameters(), lr=0.001)
 
 
 train_loss_history = []

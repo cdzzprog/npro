@@ -83,10 +83,13 @@ from osgeo import gdal
 import numpy as np
 import torch
 import cv2
-from unet import UNet
-
-model = UNet(3, 1)
-model.load_state_dict(torch.load('E:\\repository\\models_building_7.pth'))
+# from unet import UNet
+from model import UNet
+# model = UNet(3, 1)
+# model.load_state_dict(torch.load('E:\\repository\\weights\\models_building_500.pth'))
+# model.eval()
+model = UNet(img_channels=7, output_channels=1)  
+model.load_state_dict(torch.load('E:\\repository\\weights\\model_save.pth'))
 model.eval()
 
 image_file='E:\数据集\山体滑坡数据集\landslide\image\js021.png'
@@ -100,7 +103,7 @@ test_images = torch.tensor(image_data).float().unsqueeze(0)
 outputs = model(test_images)
 
 # 将预测结果二值化
-predicted_mask = (outputs > 0.8).float().squeeze().numpy()
+predicted_mask = (outputs > 0.7).float().squeeze().numpy()
 
 # 将预测结果转换为 8 位掩码图像（0-255）
 predicted_mask = (predicted_mask * 255).astype(np.uint8)
@@ -120,6 +123,6 @@ result_image = cv2.addWeighted(original_image, 0.7, colored_mask, 0.3, 0)
 cv2.imshow('Prediction on Original Image', result_image)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
-
+print(predicted_mask)
 # 如果你想保存带有预测结果的图像，可以使用以下代码：
 # cv2.imwrite('output_with_prediction.png', result_image)

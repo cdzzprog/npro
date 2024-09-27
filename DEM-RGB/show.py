@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 from dataset import TRAIN_XX, TRAIN_YY
-img = 6
+img = 0
 fig, axs = plt.subplots(1, 6, figsize=(15, 10))
 
 # 绘制RGB图像
