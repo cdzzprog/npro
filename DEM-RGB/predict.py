@@ -143,12 +143,12 @@ import cv2
 from model import UNet  # 确保你的模型文件正确导入
 
 # 加载模型
-model = UNet(img_channels=7, output_channels=1)  
-model.load_state_dict(torch.load(r'E:\repository\weights\model_save.pth'))  # 使用r前缀解决路径问题
+model = UNet(7, 1)  
+model.load_state_dict(torch.load(r'E:\repository\weights\model_save4.pth'))  # 使用r前缀解决路径问题
 model.eval()
 
 # 读取图像文件
-image_file = r'E:\数据集\山体滑坡数据集\landslide\image\df013.png'  # 使用r前缀解决路径问题
+image_file = r'E:\数据集\山体滑坡数据集\landslide\image\df011.png'  # 使用r前缀解决路径问题
 rsdataset = gdal.Open(image_file)
 image_data = np.stack([rsdataset.GetRasterBand(i).ReadAsArray() for i in range(1, 4)], axis=0)
 

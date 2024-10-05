@@ -102,8 +102,9 @@ from data import X_tensor,x_valid
 from dataset0 import TRAIN_XX, TRAIN_YY
 
 # 设置模型和加载权重
-model = UNet(img_channels=7, output_channels=1)  
-model.load_state_dict(torch.load('E:\\repository\\weights\\model_save2.pth'))
+# model = UNet(img_channels=7, output_channels=1) 
+model = UNet(7, 1)  
+model.load_state_dict(torch.load('E:\\repository\\weights\\model_save4.pth'))
 model.eval()
 
 # 创建保存结果的文件夹

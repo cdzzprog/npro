@@ -83,14 +83,12 @@ from osgeo import gdal
 import numpy as np
 import torch
 import cv2
-# from unet import UNet
-from model import UNet
-# model = UNet(3, 1)
-# model.load_state_dict(torch.load('E:\\repository\\weights\\models_building_500.pth'))
-# model.eval()
-model = UNet(img_channels=7, output_channels=1)  
-model.load_state_dict(torch.load('E:\\repository\\weights\\model_save.pth'))
+from unet import UNet
+# from model import UNet
+model = UNet(3, 1)
+model.load_state_dict(torch.load('E:\\repository\\weights\\models_building_500.pth'))
 model.eval()
+
 
 image_file='E:\数据集\山体滑坡数据集\landslide\image\js021.png'
 rsdataset = gdal.Open(image_file)

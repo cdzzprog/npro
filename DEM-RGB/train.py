@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 from data import train_loader,valid_loader
 from model import UNet
 
-
-model = UNet(img_channels=7, output_channels=1)  
+# model = UNet(img_channels=7, output_channels=1)  
+model = UNet(7, 1)  
 # model.train()
 # 设置设备
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -17,8 +17,8 @@ model.to(device)
 # 定义损失函数和优化器
 # criterion = nn.CrossEntropyLoss()  # 根据任务调整损失函数
 criterion = nn.BCEWithLogitsLoss()
-optimizer = optim.SGD(model.parameters(), lr=0.001)
-
+# optimizer = optim.SGD(model.parameters(), lr=0.001)
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-5)
 
 train_loss_history = []
 val_loss_history = []
@@ -30,12 +30,15 @@ def main(args):
      
         model.train()
         train_loss = 0.0
+        
         for batch_X, batch_Y in train_loader:
             batch_X, batch_Y = batch_X.to(device), batch_Y.to(device)
             
             optimizer.zero_grad()
             outputs = model(batch_X)
-
+            
+            # batch_Y = batch_Y.squeeze(1) 
+            # print(batch_Y.shape)
             loss = criterion(outputs, batch_Y)
             loss.backward()
             optimizer.step()
