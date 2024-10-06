@@ -103,8 +103,8 @@ from dataset0 import TRAIN_XX, TRAIN_YY
 
 # 设置模型和加载权重
 # model = UNet(img_channels=7, output_channels=1) 
-model = UNet(7, 1)  
-model.load_state_dict(torch.load('E:\\repository\\weights\\model_save4.pth'))
+model = UNet(3, 1)  
+model.load_state_dict(torch.load('E:\\repository\\weights\\models_building_500.pth'))
 model.eval()
 
 # 创建保存结果的文件夹
@@ -121,8 +121,8 @@ for img in range(20):
     # outputs = model(test_image)
     outputs = torch.sigmoid(model(test_image))
 
-    predicted_mask = (outputs > 0.8).float().squeeze().numpy()
-    predicted_mask = (predicted_mask*255).astype(np.uint8)
+    predicted_mask = (outputs > 0.5).float().squeeze().numpy()
+    predicted_mask = (predicted_mask).astype(np.uint8)
 
     # 保存预测掩码
     mask_output_path = os.path.join(output_folder, f'mask_{img}.png')
