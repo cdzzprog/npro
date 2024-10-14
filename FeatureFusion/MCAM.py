@@ -137,8 +137,14 @@ if __name__ == '__main__':
         transforms.Resize((256, 256)),  # 调整图像大小
         transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])  # 归一化
     ])
+    transform1 = transforms.Compose([
+        transforms.ToTensor(),  # 将图像转换为张量
+        # 你还可以在这里添加其他变换，例如:
+        transforms.Resize((256, 256)),  # 调整图像大小
+        transforms.Normalize(mean=[0.5], std=[0.5])  # 归一化
+    ])
     image_tensor = transform(image)
-    dem_tensor = transform(dem)
+    dem_tensor = transform1(dem)
 
     print(image_tensor.shape)
     print(dem_tensor.shape)
@@ -148,4 +154,5 @@ if __name__ == '__main__':
     sar = torch.randn(2, 3, 64, 64)
     opt = torch.randn(2, 3, 64, 64)
     print("input:", sar.shape, opt.shape)
+    print("output:", block(sar, opt))
     print("output:", block(sar, opt).shape)
