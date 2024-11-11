@@ -5,16 +5,16 @@ from shapely.geometry import shape
 from rasterio.features import shapes
 
 # 打开多波段TIF文件并读取其坐标参考系
-with rasterio.open(r'C:\Users\龙儿璨\Desktop\湿地制图\朱杭\img\WetlandXJ_202308_T44_AW_79.tif') as src:
-    
-    green = src.read(2).astype('float32')  
-    nir = src.read(4).astype('float32')    
+with rasterio.open(r'C:\Users\龙儿璨\Desktop\湿地制图\朱杭\img\WetlandXJ_202308_T43_PW_37.tif') as src:
+
+    green = src.read(4).astype('float32') 
+    nir = src.read(3).astype('float32')   
     
     # 计算NDWI
     ndwi = (green - nir) / (green + nir)
     
     # 应用阈值（0到1），生成水体掩膜
-    water_mask = np.where((ndwi >= -0.08) & (ndwi <= 1), 1, 0)
+    water_mask = np.where((ndwi >= 0.10) & (ndwi <= 1), 1, 0)
     
     # 获取栅格图像的原始坐标参考系和仿射变换
     transform = src.transform
@@ -31,7 +31,7 @@ for geom, value in mask_shapes:
 
 # 创建GeoDataFrame并保存为矢量文件 (Shapefile)，使用从图像中提取的坐标系
 gdf = gpd.GeoDataFrame(geometry=geoms, crs=crs)  # 动态获取CRS并应用
-gdf['label'] = 1  # 新增字段label并赋值为1
+gdf['label'] = 2  # 新增字段label并赋值为1
 gdf = gdf[['label', 'geometry']]
 # 输出为Shapefile
-gdf.to_file(r'C:\Users\龙儿璨\Desktop\湿地制图\label\WetlandXJ_202308_T44_AW_79label11.shp')
+gdf.to_file(r'C:\Users\龙儿璨\Desktop\湿地制图\label\WetlandXJ_202308_T43_PW_37_label22.shp')

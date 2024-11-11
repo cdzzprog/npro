@@ -6,8 +6,8 @@ from shapely.geometry import shape
 from rasterio.features import shapes
 
 # 影像文件夹路径和输出Shapefile文件夹路径
-input_folder = r'C:\Users\龙儿璨\Desktop\湿地制图\img1'
-output_folder = r'C:\Users\龙儿璨\Desktop\湿地制图\张宇杰\label1'
+input_folder = r'C:\Users\龙儿璨\Desktop\湿地制图\11.9'
+output_folder = r'C:\Users\龙儿璨\Desktop\湿地制图\11.9\119label1'
 
 # 确保输出文件夹存在
 if not os.path.exists(output_folder):

@@ -5,12 +5,12 @@ from shapely.geometry import shape
 from rasterio.features import shapes
 
 # 打开多波段TIF文件并读取其坐标参考系
-with rasterio.open(r'C:\Users\龙儿璨\Desktop\湿地制图\朱杭\img\WetlandXJ_202308_T44_AW_79.tif') as src:
+with rasterio.open(r'C:\Users\龙儿璨\Desktop\湿地制图\11.9\WetlandXJ_202308_T45_AW_98.tif') as src:
     
     band1 = src.read(4).astype('float32')  # 读取波段1并转换为float32类型
     
     # 生成掩膜：提取波段1中值在58到67之间的区域
-    target_mask = np.where((band1 >= 52) & (band1 <= 83), 1, 0)
+    target_mask = np.where((band1 >= 52) & (band1 <=75), 1, 0)
     
     # 获取栅格图像的原始坐标参考系和仿射变换
     transform = src.transform
@@ -31,7 +31,15 @@ gdf['label'] = 4  # 新增字段label并赋值为4
 gdf = gdf[['label', 'geometry']]
 
 # 输出为Shapefile
-gdf.to_file(r'C:\Users\龙儿璨\Desktop\湿地制图\label4\WetlandXJ_202308_T44_AW_79label4.shp')
+gdf.to_file(r'C:\Users\龙儿璨\Desktop\湿地制图\11.9\119label\WetlandXJ_202308_T45_AW_98label4.shp')
 
 #AW88  54-78
-#AW79  54-70  53-70
+#AW79  54-70  53-70 40-90
+#AW28  54-70  54-90  40-90   40-100  40-110  40-120 40-115
+#PW_10 
+#PW_61 40-85 40-90
+#AW1  50-70  50-75  50-80  50-84
+#AW28 50-80  40-90 40-100
+#PW_16 50-80
+#AW67
+#AW96 52-75
