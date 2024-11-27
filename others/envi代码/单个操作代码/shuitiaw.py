@@ -5,7 +5,7 @@ from shapely.geometry import shape
 from rasterio.features import shapes
 
 # 打开多波段TIF文件并读取其坐标参考系
-with rasterio.open(r'C:\Users\龙儿璨\Desktop\湿地制图\11.9\WetlandXJ_202308_T45_AW_83.tif') as src:
+with rasterio.open(r'E:\BaiduNetdiskDownload\初始数据\original\luding_after_g6_image.tif') as src:
     
     green = src.read(2).astype('float32')  
     nir = src.read(4).astype('float32')    
@@ -20,7 +20,7 @@ with rasterio.open(r'C:\Users\龙儿璨\Desktop\湿地制图\11.9\WetlandXJ_2023
     transform = src.transform
     crs = src.crs  # 自动获取图像的CRS
     print(crs)
-# 提取水体区域的形状
+提取水体区域的形状
 mask_shapes = shapes(water_mask, transform=transform)
 
 # 将提取的形状转换为矢量格式
