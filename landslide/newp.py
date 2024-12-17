@@ -54,7 +54,7 @@ model.load_state_dict(torch.load('E:\\repository\\weights\\models_building_500.p
 model.eval()
 
 # 图像输入目录和预测输出目录
-image_dir = 'E:\\数据集\\landslide4sense2022\\train\\images'
+image_dir = 'E:\\PythonProject\\LS-YOLO-master\\runs\\detect\\exp8'
 output_dir = 'predictions2'
 
 # 批量预测和保存
