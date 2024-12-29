@@ -29,8 +29,8 @@ def convert_to_tiff(filename, output_path):
     out_tif = None  # 注意必须关闭tif文件
 
 # 调用示例
-path = r'E:/sentinel2/ludingafter/S2A_MSIL2A_20220911T034551_N0400_R104_T47RQM_20220911T084454.SAFE/'
-output_path = r'E:/sentinel2/ludingafter/S2A_MSIL2A_20220911T034551_N0400_R104_T47RQM_20220911T084454.SAFE/data'
+path = r'E:\sentinel2\pamier\22.10.5\S2B_MSIL2A_20221005T055709_N0400_R091_T43SBC_20221005T084816.SAFE/'
+output_path = r'E:\sentinel2\pamier\22.10.5\S2B_MSIL2A_20221005T055709_N0400_R091_T43SBC_20221005T084816.SAFE'
 filename = path + 'MTD_MSIL2A.xml'
 convert_to_tiff(filename, output_path)  # 调用转换函数
 print("转换完成")
