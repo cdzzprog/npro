@@ -121,7 +121,7 @@ class App(ctk.CTk):
         # 返回登录按钮
         button_show_login = ctk.CTkButton(master=register_frame, text="返回登录", width=280, height=40, font=("微软雅黑", 14), command=show_login, corner_radius=8, fg_color="#4CAF50", hover_color="#81C784")
         button_show_login.pack(pady=10)
-        label_copyright = ctk.CTkLabel(master=root, text="(The Remote Sensing Intelligent Recognition System for Landslides in Plateau Regions)", font=("微软雅黑", 10), text_color="black")
+        label_copyright = ctk.CTkLabel(master=root, text="(Intelligent Landslides Detection System By Remote Sensing In Plateau Regions)", font=("微软雅黑", 10), text_color="black")
         label_copyright.place(relx=0.5, rely=0.95, anchor="center")
         # 初始化时显示登录界面
         login_frame.place(relx=0.5, rely=0.5, anchor="center")
@@ -389,6 +389,95 @@ class App(ctk.CTk):
         
         # 定期检查队列中的消息
         self.main.after(100, self.process_queue)
+
+    def train_page1(self, main):
+        """
+        初始化界面并加载必要的设置
+        """
+        self.main = main
+        self.queue = queue.Queue()
+
+        # 默认值
+        self.default_yaml_path = ""
+        self.default_model_path = ""
+        self.default_epochs = 1
+        self.default_imgsz = 640
+        self.default_batch = 1
+
+        # 绑定变量
+        self.yaml_path = tk.StringVar(value=self.default_yaml_path)
+        self.model_path = tk.StringVar(value=self.default_model_path)
+
+        # 初始化界面元素
+        self.setup_ui()
+
+        def setup_ui(self):
+            """ 设置界面布局 """
+            # 顶部按钮面板
+            self.button_frame = ctk.CTkFrame(self.main)
+            self.button_frame.pack(padx=20, pady=10, fill='x', side='top')
+
+            # 按钮参数配置
+            button_params = {
+                "width": 120,
+                "height": 40,
+                "corner_radius": 10,
+                "font": ctk.CTkFont(size=14, weight="bold"),
+            }
+
+            # 选择yaml文件按钮 (绿色)
+            self.datapre_button_1 = self.create_button(
+                text="选择yaml文件", 
+                command=self.select_yaml, 
+                fg_color="#4CAF50", 
+                hover_color="#45a049", 
+                border_color="#388E3C", 
+                **button_params
+            )
+            self.datapre_button_1.pack(side='left', padx=10, pady=10)
+
+            # 开始训练按钮 (橙色)
+            self.datapre_button_3 = self.create_button(
+                text="开始训练", 
+                command=self.start_training, 
+                fg_color="#FF9800", 
+                hover_color="#F57C00", 
+                border_color="#E65100", 
+                **button_params
+            )
+            self.datapre_button_3.pack(side='left', padx=10, pady=10)
+
+            # 选择预训练模型按钮 (红色)
+            self.datapre_button_2 = self.create_button(
+                text="选择预训练模型", 
+                command=self.select_model, 
+                fg_color="#F44336", 
+                hover_color="#D32F2F", 
+                border_color="#C62828", 
+                **button_params
+            )
+            self.datapre_button_2.pack(side='left', padx=10, pady=10)
+
+            # 日志框
+            self.logs = ctk.CTkTextbox(self.main, width=1000, height=900, fg_color="#E1E1E1")
+            self.logs.pack(padx=20, pady=20, fill='both', expand=True)
+
+        def create_button(self, text, command, fg_color, hover_color, border_color, **kwargs):
+            """
+            创建并返回一个配置好的按钮
+            """
+            return ctk.CTkButton(
+                self.button_frame,
+                text=text,
+                command=command,
+                fg_color=fg_color,
+                hover_color=hover_color,
+                border_color=border_color,
+                text_color="white",
+                **kwargs
+            )    
+
+
 
 
 

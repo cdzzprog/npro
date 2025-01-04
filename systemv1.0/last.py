@@ -1613,3 +1613,1684 @@ class App(ctk.CTk):
 if __name__ == "__main__":
     app = App()
     app.mainloop()
+
+
+
+
+import customtkinter as ctk
+import tkinter as tk
+class App(ctk.CTk):
+    def __init__(self):
+        super().__init__()
+        self.logged_in = False
+        width, height = self.get_screen_size()
+        self.geometry(f"{1600}x{1080}")
+
+        # 设置背景颜色，网易云常见的浅色调
+        self.configure(bg="#F2F2F2")
+
+        # 左侧边栏
+        self.sidebar_frame = ctk.CTkFrame(self, width=180, height=1080, corner_radius=20, fg_color="#FAFAFA")
+        self.sidebar_frame.place(x=0, y=0, width=180, height=1080)
+
+        # 欢迎登录标签
+        self.logo_label = ctk.CTkLabel(self.sidebar_frame, text="欢迎登录", font=ctk.CTkFont(size=20, weight="bold"), text_color="#333")
+        self.logo_label.place(x=20, y=20)
+        self.logo_label.bind("<Button-1>", self.login)
+
+        # 按钮样式的通用配置
+        button_params = {
+            "width": 140,
+            "height": 50,
+            "corner_radius": 25,  # 圆角
+            "font": ctk.CTkFont(size=16, weight="bold"),
+        }
+
+        # 首页按钮 (渐变色背景)
+        self.sidebar_button_1 = ctk.CTkButton(
+            self.sidebar_frame,
+            text="首页",
+            command=self.index_event,
+            fg_color="#FF6C6C",  # 网易云常用的渐变色
+            hover_color="#FF4B4B",
+            border_color="#FF3D3D",
+            text_color="white",
+            **button_params
+        )
+        self.sidebar_button_1.place(x=20, y=80, width=140, height=50)
+
+        # 数据预处理按钮 (绿色)
+        self.sidebar_button_2 = ctk.CTkButton(
+            self.sidebar_frame,
+            text="数据预处理",
+            command=self.datapre_event,
+            fg_color="#00C853",  # 清新的绿色
+            hover_color="#00B34A",
+            border_color="#00A34A",
+            text_color="white",
+            **button_params
+        )
+        self.sidebar_button_2.place(x=20, y=150, width=140, height=50)
+
+        # 训练按钮 (蓝色)
+        self.sidebar_button_3 = ctk.CTkButton(
+            self.sidebar_frame,
+            text="训练",
+            command=self.train_event,
+            fg_color="#2196F3",
+            hover_color="#1976D2",
+            border_color="#1976D2",
+            text_color="white",
+            **button_params
+        )
+        self.sidebar_button_3.place(x=20, y=220, width=140, height=50)
+
+        # 预测按钮 (橙色)
+        self.sidebar_button_4 = ctk.CTkButton(
+            self.sidebar_frame,
+            text="预测",
+            command=self.predict_event,
+            fg_color="#FF9800",  # 橙色
+            hover_color="#F57C00",
+            border_color="#E65100",
+            text_color="white",
+            **button_params
+        )
+        self.sidebar_button_4.place(x=20, y=290, width=140, height=50)
+
+        # 摄像头按钮 (灰色)
+        self.sidebar_button_5 = ctk.CTkButton(
+            self.sidebar_frame,
+            text="摄像头",
+            command=self.sidebar_button_event,
+            fg_color="#B0BEC5",  # 清新的灰色
+            hover_color="#90A4AE",
+            border_color="#78909C",
+            text_color="white",
+            **button_params
+        )
+        self.sidebar_button_5.place(x=20, y=360, width=140, height=50)
+
+        # 签名
+        self.signature = ctk.CTkLabel(self.sidebar_frame, text="(landslide)", text_color="#888", font=("Roboto Medium", 10))
+        self.signature.place(x=5, y=1040)
+
+        # 主内容框
+        self.main = ctk.CTkFrame(self, height=1080, corner_radius=20, fg_color="#FFFFFF")
+        self.main.place(x=180, y=0, width=1460, height=1080)
+        def train_page(self):
+            """
+            加载数据处理内容的具体函数
+            """
+            # 数据预处理页面的初始化
+            self.default_yaml_path = ""
+            self.default_model_path = ""
+            self.default_epochs = 1
+            self.default_imgsz = 640
+            self.default_batch = 1
+            self.queue = queue.Queue()
+
+            # 绑定变量，保存yaml文件路径和模型路径
+            self.yaml_path = tk.StringVar(value=self.default_yaml_path)
+            self.model_path = tk.StringVar(value=self.default_model_path)
+
+            # 创建主框架，作为容器承载所有组件
+            self.main_frame = ctk.CTkFrame(self.main)  # 使用CTkFrame作为主容器
+            self.main_frame.place(x=20, y=20, relwidth=0.95, relheight=0.95)  # 使用place管理位置和大小
+
+            # 创建顶部按钮框架，容纳所有按钮
+            self.button_frame = ctk.CTkFrame(self.main_frame)  # 创建一个框架来放按钮
+            self.button_frame.place(x=0, y=0, relwidth=1, height=100)  # 顶部框架占据主容器的上方，宽度为100%
+
+            # 定义按钮样式的通用配置
+            button_params = {
+                "width": 140,  # 按钮宽度
+                "height": 50,  # 按钮高度
+                "corner_radius": 12,  # 按钮的圆角半径
+                "font": ctk.CTkFont(size=16, weight="bold"),  # 按钮字体，较大的字体使按钮显得更现代
+            }
+
+            # 选择yaml文件的按钮，绿色样式
+            self.datapre_button_1 = ctk.CTkButton(
+                self.button_frame, 
+                text="选择yaml文件",  # 按钮文本
+                command=self.select_yaml,  # 点击按钮后执行的命令
+                fg_color="#4CAF50",  # 按钮的背景颜色
+                hover_color="#45a049",  # 悬停时的背景颜色
+                border_color="#388E3C",  # 按钮边框颜色
+                text_color="white",  # 按钮文本颜色
+                **button_params  # 继承按钮样式的配置
+            )
+            self.datapre_button_1.place(x=20, y=20)  # 设置按钮位置，距离左上角20像素
+
+            # 选择预训练模型的按钮，红色样式
+            self.datapre_button_2 = ctk.CTkButton(
+                self.button_frame, 
+                text="选择预训练模型",  # 按钮文本
+                command=self.select_model,  # 点击按钮后执行的命令
+                fg_color="#F44336",  # 按钮的背景颜色
+                hover_color="#D32F2F",  # 悬停时的背景颜色
+                border_color="#C62828",  # 按钮边框颜色
+                text_color="white",  # 按钮文本颜色
+                **button_params  # 继承按钮样式的配置
+            )
+            self.datapre_button_2.place(x=180, y=20)  # 设置按钮位置，距离左上角180像素
+
+            # 开始训练的按钮，橙色样式
+            self.datapre_button_3 = ctk.CTkButton(
+                self.button_frame, 
+                text="开始训练",  # 按钮文本
+                command=self.start_training,  # 点击按钮后执行的命令
+                fg_color="#FF9800",  # 按钮的背景颜色
+                hover_color="#F57C00",  # 悬停时的背景颜色
+                border_color="#E65100",  # 按钮边框颜色
+                text_color="white",  # 按钮文本颜色
+                **button_params  # 继承按钮样式的配置
+            )
+            self.datapre_button_3.place(x=340, y=20)  # 设置按钮位置，距离左上角340像素
+
+            # 创建一个文本框用来显示日志，放在主框架下方
+            self.logs = ctk.CTkTextbox(self.main_frame, width=1000, height=600, fg_color="#E1E1E1")  # 创建一个文本框
+            self.logs.place(x=20, y=120, relwidth=1, relheight=0.75)  # 文本框放在下方，宽度填充父容器，75%的高度
+            def predict_page(self):
+                """
+                加载数据处理内容的具体函数
+                """
+                # 数据预处理页面
+                self.total_images = 0
+                self.current_image_index = 0
+                self.processed_images = []  # 用于存储处理后的图像
+                self.model = None 
+
+                # 背景和外部容器
+                self.main.config(bg="#f0f0f0")  # 背景颜色为浅灰色
+                
+                # 按钮框架
+                self.button_frame = ctk.CTkFrame(self.main, fg_color="#ffffff")  # 白色背景
+                self.button_frame.place(x=30, y=30, relwidth=0.94)  # 使用place精确位置，relwidth使其相对宽度为90%
+
+                # 按钮的样式
+                button_params = {
+                    "width": 150,
+                    "height": 50,
+                    "corner_radius": 12,  # 更圆的角
+                    "font": ctk.CTkFont(size=16, weight="bold"),  # 增大字体并加粗
+                }
+
+                # 按钮颜色的自定义（现代化的深色背景）
+                button_colors = {
+                    "green": "#4CAF50",  # 明亮绿色
+                    "orange": "#FF5722",  # 鲜艳的橙色
+                    "red": "#D32F2F",  # 深红色
+                    "light_blue": "#2196F3",  # 清新的蓝色
+                }
+
+                # 选择图像文件夹按钮 (绿色)
+                self.datapre_button_1 = ctk.CTkButton(
+                    self.button_frame, 
+                    text="选择图像文件夹", 
+                    command=self.selectdatapre_folder, 
+                    fg_color=button_colors["green"],  
+                    hover_color="#388E3C",  # 悬停颜色
+                    border_color="#2C6B2F",  
+                    text_color="white", 
+                    **button_params
+                )
+                self.datapre_button_1.place(x=30, y=10)  # 按钮位置放在frame内部的(30, 10)
+
+                # 选择模型文件夹按钮 (绿色)
+                self.datapre_button_2 = ctk.CTkButton(
+                    self.button_frame, 
+                    text="选择模型文件夹", 
+                    command=self.selectpremodel_folder, 
+                    fg_color=button_colors["green"],  
+                    hover_color="#388E3C",  
+                    border_color="#2C6B2F",  
+                    text_color="white", 
+                    **button_params
+                )
+                self.datapre_button_2.place(x=200, y=10)  # 第二个按钮放置在左边框稍右的位置
+
+                # 开始处理按钮 (橙色)
+                self.datapre_button_3 = ctk.CTkButton(
+                    self.button_frame, 
+                    text="开始识别", 
+                    command=self.start_processing, 
+                    fg_color=button_colors["orange"],  
+                    hover_color="#E64A19",  
+                    border_color="#D32F2F",  
+                    text_color="white", 
+                    **button_params
+                )
+                self.datapre_button_3.place(x=370, y=10)  # 第三个按钮稍微向右偏移
+
+                # 上一个按钮 (红色)
+                self.datapre_button_4 = ctk.CTkButton(
+                    self.button_frame, 
+                    text="上一张", 
+                    command=self.showlastimage, 
+                    fg_color=button_colors["red"],  
+                    hover_color="#C2185B",  
+                    border_color="#B71C1C",  
+                    text_color="white", 
+                    **button_params
+                )
+                self.datapre_button_4.place(x=550, y=10)  # 位置根据需要调整
+
+                # 下一个按钮 (蓝色)
+                self.datapre_button_5 = ctk.CTkButton(
+                    self.button_frame, 
+                    text="下一张", 
+                    command=self.shownextimage, 
+                    fg_color=button_colors["light_blue"],  
+                    hover_color="#1976D2",  
+                    border_color="#0288D1",  
+                    text_color="white", 
+                    **button_params
+                )
+                self.datapre_button_5.place(x=720, y=10)  # 位置根据需要调整
+
+                # 显示进度条
+                self.progress_bar = ctk.CTkProgressBar(self.main, progress_color="#FF9800", orientation="horizontal")
+                self.progress_bar.place(x=30, y=150, width=740)  # 使用place设置精确位置和宽度
+
+                # 显示图片的索引
+                self.image_index_label = ctk.CTkLabel(self.main, text=f"{self.current_image_index + 1}/{self.total_images}", font=ctk.CTkFont(size=14, weight="bold"))
+                self.image_index_label.place(x=30, y=120)  # 放置在进度条上方
+
+                # 显示原始图片区域
+                self.original_image_label = ctk.CTkLabel(self.main, width=700, height=400, fg_color="#f5f5f5", text="", text_color="black")
+                self.original_image_label.place(x=30, y=220)  # 设置图像位置
+
+                # 显示处理后的图片区域
+                self.processed_image_label = ctk.CTkLabel(self.main, width=700, height=400, fg_color="#f5f5f5", text="", text_color="black")
+                self.processed_image_label.place(x=30, y=640)  # 设置处理后图像的位置
+
+                # 显示模型选择标签
+                self.model_label = ctk.CTkLabel(self.main, 
+                                                text="尚未选择模型", 
+                                                font=ctk.CTkFont(family="Segoe UI", size=16, weight="normal"))
+                self.model_label.place(x=30, y=1050)  # 设置模型标签的位置
+
+            def datapre_page(self):
+                """
+                加载数据处理内容的具体函数
+                """
+                # 数据预处理页面
+                self.total_images = 0
+                self.current_image_index = 0
+                self.processed_images = []  # 用于存储处理后的图像
+                
+                # 设置按钮框架
+                self.button_frame = ctk.CTkFrame(self.main, fg_color="#FAFAFA")
+                self.button_frame.place(relx=0.5, rely=0.1, anchor="n", width=700, height=60)  # 将按钮框架置于页面上部
+                
+                # 设置按钮样式
+                button_params = {
+                    "width": 120,  
+                    "height": 40,  
+                    "corner_radius": 12,  
+                    "font": ctk.CTkFont(size=14, weight="bold"),  
+                }
+
+                # 按钮颜色自定义
+                button_colors = {
+                    "green": "#4CAF50",  # 绿色
+                    "orange": "#FF9800",  # 橙色
+                    "red": "#F44336",  # 红色
+                    "light_blue": "#03A9F4",  # 蓝色
+                }
+
+                # 按钮布局
+                self.datapre_button_1 = ctk.CTkButton(
+                    self.button_frame, 
+                    text="选择文件夹", 
+                    command=self.selectdatapre_folder, 
+                    fg_color=button_colors["green"],  
+                    hover_color="#388E3C",  
+                    border_color="#2C6B2F",  
+                    text_color="white", 
+                    **button_params
+                )
+                self.datapre_button_1.place(relx=0.05, rely=0.5, anchor="center")  # 按钮在框架内靠左对齐
+
+                self.datapre_button_2 = ctk.CTkOptionMenu(
+                    self.button_frame,
+                    variable=self.selected_model_var,
+                    values=self.datapre_options_visible,
+                    state="hidden",  # 初始时隐藏下拉框
+                )
+                self.datapre_button_2.place(relx=0.25, rely=0.5, anchor="center")  # 下拉菜单置于按钮右侧
+
+                self.datapre_button_3 = ctk.CTkButton(
+                    self.button_frame, 
+                    text="开始处理", 
+                    command=self.start_processing, 
+                    fg_color=button_colors["orange"],  
+                    hover_color="#FF5722",  
+                    border_color="#F4511E",  
+                    text_color="white", 
+                    **button_params
+                )
+                self.datapre_button_3.place(relx=0.45, rely=0.5, anchor="center")  # 中间按钮
+
+                self.datapre_button_4 = ctk.CTkButton(
+                    self.button_frame, 
+                    text="⏮", 
+                    command=self.showlastimage, 
+                    fg_color=button_colors["red"],  
+                    hover_color="#D32F2F",  
+                    border_color="#C62828",  
+                    text_color="white",  
+                    **button_params
+                )
+                self.datapre_button_4.place(relx=0.65, rely=0.5, anchor="center")  # 上一个按钮右侧
+
+                self.datapre_button_5 = ctk.CTkButton(
+                    self.button_frame, 
+                    text="⏭", 
+                    command=self.shownextimage, 
+                    fg_color=button_colors["light_blue"],  
+                    hover_color="#0288D1",  
+                    border_color="#0277BD",  
+                    text_color="white",  
+                    **button_params
+                )
+                self.datapre_button_5.place(relx=0.85, rely=0.5, anchor="center")  # 下一个按钮右侧
+
+                # 设置进度条和索引
+                self.progress_bar = ctk.CTkProgressBar(self.main, progress_color="#FF9800", orientation="horizontal")
+                self.progress_bar.place(relx=0.5, rely=0.2, anchor="n", width=700, height=20)  # 进度条位于页面中上部
+
+                # 显示图片的索引
+                self.image_index_label = ctk.CTkLabel(self.main, text=f"{self.current_image_index + 1}/{self.total_images}")
+                self.image_index_label.place(relx=0.5, rely=0.25, anchor="n")  # 索引标签位于进度条下方
+
+                # 显示原始图片区域
+                self.original_image_label = ctk.CTkLabel(self.main, width=700, height=400, fg_color="#ECECEC", text="")
+                self.original_image_label.place(relx=0.5, rely=0.6, anchor="n", width=700, height=400)  # 原始图片区域
+
+                # 显示处理后的图片区域
+                self.processed_image_label = ctk.CTkLabel(self.main, width=700, height=400, fg_color="#ECECEC", text="")
+                self.processed_image_label.place(relx=0.5, rely=0.9, anchor="n", width=700, height=400)  # 处理后的图片区域
+
+
+
+if __name__ == "__main__":
+    app = App()
+    app.mainloop()
+
+
+class App(ctk.CTk):
+ 
+
+    def show_login():
+        register_frame.grid_forget()  # 隐藏注册框架
+        login_frame.grid(row=0, column=0, padx=60, pady=20, sticky="nsew")  # 显示登录框架
+
+    def show_register():
+        login_frame.grid_forget()  # 隐藏登录框架
+        register_frame.grid(row=0, column=0, padx=60, pady=20, sticky="nsew")  # 显示注册框架
+
+    def login():
+        username = entry_username.get()
+        password = entry_password.get()
+        # 在这里添加登录逻辑
+        print(f"登录 - 用户名: {username}, 密码: {password}")
+
+    def register():
+        username = entry_register_username.get()
+        password = entry_register_password.get()
+        # 在这里添加注册逻辑
+        print(f"注册 - 用户名: {username}, 密码: {password}")
+
+    root = ctk.CTk()  # 创建窗口
+    root.geometry("500x500")
+    root.title("高原地区山体滑坡遥感智能识别系统")
+
+    # 设置CTk的主题和样式
+    ctk.set_appearance_mode("Dark")  # 设置暗色主题
+    ctk.set_default_color_theme("dark-blue")  # 设置默认主题颜色为深蓝色
+
+    # 获取屏幕宽度和高度，设置窗口居中
+    screen_width = root.winfo_screenwidth()
+    screen_height = root.winfo_screenheight()
+    window_width = 500
+    window_height = 600
+    x_position = (screen_width - window_width) // 2
+    y_position = (screen_height - window_height) // 2
+    root.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
+
+    # 创建登录框架
+    login_frame = ctk.CTkFrame(master=root, width=400, height=300, corner_radius=15, bg_color="#2F3136")
+    login_frame.grid(row=0, column=0, padx=60, pady=20, sticky="nsew")
+
+    # 登录标题
+    label_login = ctk.CTkLabel(master=login_frame, text="系统登录", font=("Arial", 24, "bold"), text_color="white")
+    label_login.grid(row=0, column=0, columnspan=2, pady=20)
+
+    # 用户头像
+    label_avatar = ctk.CTkLabel(master=login_frame, text="👤", font=("Arial", 40), text_color="white")
+    label_avatar.grid(row=1, column=0, columnspan=2, pady=10)
+
+    # 用户名输入框
+    entry_username = ctk.CTkEntry(master=login_frame, placeholder_text="请输入用户名", width=280, height=40, font=("Arial", 14))
+    entry_username.grid(row=2, column=0, columnspan=2, pady=10)
+
+    # 密码输入框
+    entry_password = ctk.CTkEntry(master=login_frame, placeholder_text="请输入密码", show="*", width=280, height=40, font=("Arial", 14))
+    entry_password.grid(row=3, column=0, columnspan=2, pady=10)
+
+    # 登录按钮
+    button_login = ctk.CTkButton(master=login_frame, text="登录", width=280, height=40, font=("Arial", 14), command=login, corner_radius=8, fg_color="#4CAF50", hover_color="#81C784")
+    button_login.grid(row=4, column=0, columnspan=2, pady=10)
+
+    # 注册按钮
+    button_show_register = ctk.CTkButton(master=login_frame, text="注册", width=280, height=40, font=("Arial", 14), command=show_register, corner_radius=8, fg_color="#2196F3", hover_color="#64B5F6")
+    button_show_register.grid(row=5, column=0, columnspan=2, pady=10)
+
+    # "记住我"复选框
+    checkbox_login = ctk.CTkCheckBox(master=login_frame, text="记住我", font=("Arial", 12), text_color="white")
+    checkbox_login.grid(row=6, column=0, columnspan=2, pady=10)
+
+    # 创建注册框架
+    register_frame = ctk.CTkFrame(master=root, width=400, height=300, corner_radius=15, bg_color="#2F3136")
+    label_register = ctk.CTkLabel(master=register_frame, text="系统注册", font=("Arial", 24, "bold"), text_color="white")
+    label_register.grid(row=0, column=0, columnspan=2, pady=20)
+
+    entry_register_username = ctk.CTkEntry(master=register_frame, placeholder_text="请输入用户名", width=280, height=40, font=("Arial", 14))
+    entry_register_username.grid(row=1, column=0, columnspan=2, pady=10)
+
+    entry_register_password = ctk.CTkEntry(master=register_frame, placeholder_text="请输入密码", show="*", width=280, height=40, font=("Arial", 14))
+    entry_register_password.grid(row=2, column=0, columnspan=2, pady=10)
+
+    # 注册按钮
+    button_register = ctk.CTkButton(master=register_frame, text="注册", width=280, height=40, font=("Arial", 14), command=register, corner_radius=8, fg_color="#2196F3", hover_color="#64B5F6")
+    button_register.grid(row=3, column=0, columnspan=2, pady=10)
+
+    # 返回登录按钮
+    button_show_login = ctk.CTkButton(master=register_frame, text="返回登录", width=280, height=40, font=("Arial", 14), command=show_login, corner_radius=8, fg_color="#4CAF50", hover_color="#81C784")
+    button_show_login.grid(row=4, column=0, columnspan=2, pady=10)
+
+    label_copyright = ctk.CTkLabel(master=root, text="(The Remote Sensing Intelligent Recognition System for Landslides in Plateau Regions)", font=("Arial", 10), text_color="white")
+    label_copyright.grid(row=1, column=0, pady=10, sticky="s")
+
+    # 初始化时显示登录界面
+    root.grid_rowconfigure(0, weight=1)
+    root.grid_columnconfigure(0, weight=1)
+
+    # 启动应用程序
+    root.mainloop()
+
+    def __init__(self):
+        
+        super().__init__()
+        self.logged_in = False
+        width, height = self.get_screen_size()
+        self.geometry(f"{1600}x{1080}")
+
+        # 主界面配置
+        self.configure(bg="#f1f1f1")
+
+        # 左侧边栏
+        self.sidebar_frame = ctk.CTkFrame(self, width=140, height=1080, corner_radius=20, fg_color="#2C3E50")
+        self.sidebar_frame.pack(side="left", fill="y", padx=10, pady=10)
+
+        # 欢迎登录标签
+        self.logo_label = ctk.CTkLabel(self.sidebar_frame, text="欢迎登录", font=ctk.CTkFont(size=20, weight="bold"), text_color="white")
+        self.logo_label.pack(padx=20, pady=(20, 10))
+        self.logo_label.bind("<Button-1>", self.login)
+
+        # 按钮样式的通用配置
+        button_params = {
+            "width": 120,  
+            "height": 40,  
+            "corner_radius": 12,  
+            "font": ctk.CTkFont(size=14, weight="bold"),  
+            "border_width": 2,
+            "border_color": "#2980B9",
+        }
+
+        # 首页按钮
+        self.sidebar_button_1 = ctk.CTkButton(
+            self.sidebar_frame, 
+            text="首页", 
+            command=self.index_event, 
+            fg_color="#34495E",  
+            hover_color="#45a049",  
+            text_color="white", 
+            **button_params
+        )
+        self.sidebar_button_1.pack(fill="x", padx=20, pady=10)
+
+        # 数据预处理按钮
+        self.sidebar_button_2 = ctk.CTkButton(
+            self.sidebar_frame, 
+            text="数据预处理", 
+            command=self.datapre_event, 
+            fg_color="#27AE60",  
+            hover_color="#45a049",  
+            text_color="white", 
+            **button_params
+        )
+        self.sidebar_button_2.pack(fill="x", padx=20, pady=10)
+
+        # 训练按钮
+        self.sidebar_button_3 = ctk.CTkButton(
+            self.sidebar_frame, 
+            text="训练", 
+            command=self.train_event, 
+            fg_color="#2980B9",  
+            hover_color="#1976D2",  
+            text_color="white", 
+            **button_params
+        )
+        self.sidebar_button_3.pack(fill="x", padx=20, pady=10)
+
+        # 预测按钮
+        self.sidebar_button_4 = ctk.CTkButton(
+            self.sidebar_frame, 
+            text="预测", 
+            command=self.predict_event, 
+            fg_color="#E74C3C",  
+            hover_color="#D32F2F",  
+            text_color="white", 
+            **button_params
+        )
+        self.sidebar_button_4.pack(fill="x", padx=20, pady=10)
+
+        # 摄像头按钮
+        self.sidebar_button_5 = ctk.CTkButton(
+            self.sidebar_frame, 
+            text="摄像头", 
+            command=self.sidebar_button_event, 
+            fg_color="#F39C12",  
+            hover_color="#F57C00",  
+            text_color="white", 
+            **button_params
+        )
+        self.sidebar_button_5.pack(fill="x", padx=20, pady=10)
+
+        # 签名
+        self.signature = ctk.CTkLabel(self.sidebar_frame, text="(landslide)", text_color="white", font=("Roboto Medium", 10))
+        self.signature.pack(side="bottom", padx=5, pady=5)
+
+        # 主内容区域
+        self.main = ctk.CTkFrame(self, corner_radius=20, fg_color="#ECF0F1")
+        self.main.pack(side="right", fill="both", expand=True, padx=20, pady=20)
+        def predict_page(self):
+            """
+            加载数据处理内容的具体函数
+            """
+            # 数据预处理页面
+            self.total_images = 0
+            self.current_image_index = 0
+            self.processed_images = []  # 用于存储处理后的图像
+            self.model = None 
+
+            # 按钮框架
+            self.button_frame = ctk.CTkFrame(self.main, fg_color="#f5f5f5")  # 按钮框架保持深色背景
+            self.button_frame.pack(padx=20, pady=10, fill="x", expand=True)
+
+            # 按钮的样式
+            button_params = {
+                "width": 130,
+                "height": 45,
+                "corner_radius": 10,  # 更圆的角
+                "font": ctk.CTkFont(size=16, weight="bold"),  # 增大字体并加粗
+            }
+
+            # 按钮颜色的自定义（现代化的深色背景）
+            button_colors = {
+                "green": "#5CBB5A",  # 绿色 (较浅的绿色)
+                "orange": "#FF5722",  # 橙色 (鲜艳的橙色)
+                "red": "#D32F2F",  # 红色 (深红色)
+                "light_blue": "#1976D2",  # 蓝色 (现代蓝色)
+            }
+
+            # 选择图像文件夹按钮 (绿色)
+            self.datapre_button_1 = ctk.CTkButton(
+                self.button_frame, 
+                text="选择图像文件夹", 
+                command=self.selectdatapre_folder, 
+                fg_color=button_colors["green"],  
+                hover_color="#4CAF50",  # 悬停颜色
+                border_color="#388E3C",  
+                text_color="white", 
+                **button_params
+            )
+            self.datapre_button_1.pack(side="left", padx=10, pady=10, expand=True)
+
+            # 选择模型文件夹按钮 (绿色)
+            self.datapre_button_2 = ctk.CTkButton(
+                self.button_frame, 
+                text="选择模型文件夹", 
+                command=self.selectpremodel_folder, 
+                fg_color=button_colors["green"],  
+                hover_color="#4CAF50",  
+                border_color="#388E3C",  
+                text_color="white", 
+                **button_params
+            )
+            self.datapre_button_2.pack(side="left", padx=10, pady=10, expand=True)
+
+            # 开始处理按钮 (橙色)
+            self.datapre_button_3 = ctk.CTkButton(
+                self.button_frame, 
+                text="开始识别", 
+                command=self.start_processing, 
+                fg_color=button_colors["orange"],  # 按钮背景颜色
+                hover_color="#F57C00",  # 悬停时按钮的背景颜色
+                border_color="#E65100",  # 按钮边框颜色
+                text_color="white",  # 文本颜色
+                **button_params
+            )
+            self.datapre_button_3.pack(side="left", padx=10, pady=10, expand=True)
+
+            # 上一个按钮 (红色)
+            self.datapre_button_4 = ctk.CTkButton(
+                self.button_frame, 
+                text="上一张", 
+                command=self.showlastimage, 
+                fg_color=button_colors["red"],  # 按钮背景颜色
+                hover_color="#C62828",  # 悬停时按钮的背景颜色
+                border_color="#B71C1C",  # 按钮边框颜色
+                text_color="white",  # 文本颜色
+                **button_params
+            )
+            self.datapre_button_4.pack(side="left", padx=10, pady=10, expand=True)
+
+            # 下一个按钮 (蓝色)
+            self.datapre_button_5 = ctk.CTkButton(
+                self.button_frame, 
+                text="下一张", 
+                command=self.shownextimage, 
+                fg_color=button_colors["light_blue"],  # 按钮背景颜色
+                hover_color="#1565C0",  # 悬停时按钮的背景颜色
+                border_color="#0288D1",  # 按钮边框颜色
+                text_color="white",  # 文本颜色
+                **button_params
+            )
+            self.datapre_button_5.pack(side="left", padx=10, pady=10, expand=True)
+
+            # 显示进度条和索引
+            self.progress_bar = ctk.CTkProgressBar(self.main, progress_color="#FF9800", orientation="horizontal")
+            self.progress_bar.pack(padx=20, pady=10, fill="x", expand=True)
+
+            # 显示图片的索引，放置在进度条旁边
+            self.image_index_label = ctk.CTkLabel(self.main, text=f"{self.current_image_index + 1}/{self.total_images}", font=ctk.CTkFont(size=14))
+            self.image_index_label.pack(padx=10, pady=10, side="left")
+
+            # 显示原始图片区域
+            self.original_image_label = ctk.CTkLabel(self.main, width=700, height=400, fg_color="#f5f5f5", text="", text_color="black")
+            self.original_image_label.pack(padx=20, pady=20, fill="both", expand=True)
+
+            # 显示处理后的图片区域
+            self.processed_image_label = ctk.CTkLabel(self.main, width=700, height=400, fg_color="#f5f5f5", text="", text_color="black")
+            self.processed_image_label.pack(padx=20, pady=20, fill="both", expand=True)
+
+            # 模型选择标签
+            self.model_label = ctk.CTkLabel(self.main, 
+                                            text="尚未选择模型", 
+                                            font=ctk.CTkFont(family="Segoe UI", size=16, weight="normal"))
+            self.model_label.pack(padx=5, pady=5)
+
+        def train_page(self):
+            """
+            加载数据处理内容的具体函数
+            """
+            # 数据预处理页面的初始化
+            self.default_yaml_path = ""
+            self.default_model_path = ""
+            self.default_epochs = 1
+            self.default_imgsz = 640
+            self.default_batch = 1
+            self.queue = queue.Queue()
+            
+            # 绑定变量，保存yaml文件路径和模型路径
+            self.yaml_path = tk.StringVar(value=self.default_yaml_path)
+            self.model_path = tk.StringVar(value=self.default_model_path)
+
+            # 创建主框架，作为容器承载所有组件
+            self.main_frame = ctk.CTkFrame(self.main)  # 使用CTkFrame作为主容器
+            self.main_frame.pack(padx=20, pady=20, fill='both', expand=True)  # 填满父容器，并设定内边距
+
+            # 创建顶部按钮框架，容纳所有按钮
+            self.button_frame = ctk.CTkFrame(self.main_frame)  # 创建一个框架来放按钮
+            self.button_frame.pack(side='top', pady=20, fill='x', anchor='n')  # 按钮框架居上对齐，填充父容器宽度
+
+            # 定义按钮样式的通用配置
+            button_params = {
+                "width": 140,  # 按钮宽度
+                "height": 50,  # 按钮高度
+                "corner_radius": 12,  # 按钮的圆角半径
+                "font": ctk.CTkFont(size=16, weight="bold"),  # 按钮字体，较大的字体使按钮显得更现代
+            }
+
+            # 选择yaml文件的按钮，绿色样式
+            self.datapre_button_1 = ctk.CTkButton(
+                self.button_frame, 
+                text="选择yaml文件",  # 按钮文本
+                command=self.select_yaml,  # 点击按钮后执行的命令
+                fg_color="#4CAF50",  # 按钮的背景颜色
+                hover_color="#45a049",  # 悬停时的背景颜色
+                border_color="#388E3C",  # 按钮边框颜色
+                text_color="white",  # 按钮文本颜色
+                **button_params  # 继承按钮样式的配置
+            )
+            self.datapre_button_1.pack(side='left', padx=10, pady=10)  # 水平排列，按钮之间有一定间距
+
+            # 选择预训练模型的按钮，红色样式
+            self.datapre_button_2 = ctk.CTkButton(
+                self.button_frame, 
+                text="选择预训练模型",  # 按钮文本
+                command=self.select_model,  # 点击按钮后执行的命令
+                fg_color="#F44336",  # 按钮的背景颜色
+                hover_color="#D32F2F",  # 悬停时的背景颜色
+                border_color="#C62828",  # 按钮边框颜色
+                text_color="white",  # 按钮文本颜色
+                **button_params  # 继承按钮样式的配置
+            )
+            self.datapre_button_2.pack(side='left', padx=10, pady=10)  # 水平排列，按钮之间有一定间距
+
+            # 开始训练的按钮，橙色样式
+            self.datapre_button_3 = ctk.CTkButton(
+                self.button_frame, 
+                text="开始训练",  # 按钮文本
+                command=self.start_training,  # 点击按钮后执行的命令
+                fg_color="#FF9800",  # 按钮的背景颜色
+                hover_color="#F57C00",  # 悬停时的背景颜色
+                border_color="#E65100",  # 按钮边框颜色
+                text_color="white",  # 按钮文本颜色
+                **button_params  # 继承按钮样式的配置
+            )
+            self.datapre_button_3.pack(side='left', padx=10, pady=10)  # 水平排列，按钮之间有一定间距
+
+            # 创建一个文本框用来显示日志，放在主框架下方
+            self.logs = ctk.CTkTextbox(self.main_frame, width=1000, height=900, fg_color="#E1E1E1")  # 创建一个文本框
+            self.logs.pack(padx=20, pady=20, fill='both', expand=True)  # 填充父容器的剩余空间，并设定内外边距
+        def datapre_page(self):
+            """
+            加载数据处理内容的具体函数
+            """
+            # 数据预处理页面
+            self.total_images = 0
+            self.current_image_index = 0
+            self.processed_images = []  # 用于存储处理后的图像
+            
+            # 设置按钮框架，给框架添加一定的内外边距
+            self.button_frame = ctk.CTkFrame(self.main, fg_color="#F5F5F5")
+            self.button_frame.pack(padx=20, pady=10, fill="x")  # 按钮框架占据水平空间
+            
+            # 设置按钮样式
+            button_params = {
+                "width": 120,  
+                "height": 40,  
+                "corner_radius": 10,  
+                "font": ctk.CTkFont(size=14, weight="bold"),  
+            }
+
+            # 按钮颜色的自定义
+            button_colors = {
+                "green": "#4CAF50",  # 绿色
+                "orange": "#FF9800",  # 橙色
+                "red": "#F44336",  # 红色
+                "light_orange": "#FF5722",  # 深橙色
+            }
+
+            # 按钮列表
+            self.datapre_button_1 = ctk.CTkButton(
+                self.button_frame, 
+                text="选择文件夹", 
+                command=self.selectdatapre_folder, 
+                fg_color=button_colors["green"],  
+                hover_color="#45a049",  
+                border_color="#388E3C",  
+                text_color="white", 
+                **button_params
+            )
+            self.datapre_button_1.pack(side="left", padx=10, pady=10, fill="y")
+
+            # 创建一个下拉菜单（OptionMenu）
+            self.datapre_button_2 = ctk.CTkOptionMenu(
+                self.button_frame,
+                variable=self.selected_model_var,
+                values=self.datapre_options_visible,
+                state="hidden",  # 初始时隐藏下拉框
+            )
+            self.datapre_button_2.pack(side="left", padx=10, pady=10, fill="y")
+
+            self.datapre_button_3 = ctk.CTkButton(
+                self.button_frame, 
+                text="开始处理", 
+                command=self.start_processing, 
+                fg_color=button_colors["orange"],  
+                hover_color="#F57C00",  
+                border_color="#E65100",  
+                text_color="white", 
+                **button_params
+            )
+            self.datapre_button_3.pack(side="left", padx=10, pady=10, fill="y")
+
+            self.datapre_button_4 = ctk.CTkButton(
+                self.button_frame, 
+                text="⏮", 
+                command=self.showlastimage, 
+                fg_color=button_colors["red"],  
+                hover_color="#D32F2F",  
+                border_color="#C62828",  
+                text_color="white",  
+                **button_params
+            )
+            self.datapre_button_4.pack(side="left", padx=10, pady=10, fill="y")
+
+            self.datapre_button_5 = ctk.CTkButton(
+                self.button_frame, 
+                text="⏭", 
+                command=self.shownextimage, 
+                fg_color=button_colors["light_orange"],  
+                hover_color="#FF5722",  
+                border_color="#F4511E",  
+                text_color="white",  
+                **button_params
+            )
+            self.datapre_button_5.pack(side="left", padx=10, pady=10, fill="y")
+
+            # 设置进度条和索引
+            self.progress_bar = ctk.CTkProgressBar(self.main, progress_color="#FF9800", orientation="horizontal")
+            self.progress_bar.pack(padx=20, pady=10, fill="x")
+
+            # 显示图片的索引
+            self.image_index_label = ctk.CTkLabel(self.main, text=f"{self.current_image_index + 1}/{self.total_images}")
+            self.image_index_label.pack(padx=10, pady=10, side="left")
+
+            # 显示原始图片区域
+            self.original_image_label = ctk.CTkLabel(self.main, width=700, height=400, fg_color="#E1E1E1", text="")
+            self.original_image_label.pack(padx=20, pady=20, fill="both", expand=True)
+
+            # 显示处理后的图片区域
+            self.processed_image_label = ctk.CTkLabel(self.main, width=700, height=400, fg_color="#E1E1E1", text="")
+            self.processed_image_label.pack(padx=20, pady=20, fill="both", expand=True)
+
+
+
+if __name__ == "__main__":
+    app = App()
+    app.mainloop()
+
+import torch
+import torch.nn.functional as F
+import numpy as np
+import cv2
+from torchvision.ops import nms
+
+
+# 数据增强：常见的图像增强方法
+class DataAugmentation:
+    def __init__(self, size=(416, 416)):
+        self.size = size
+
+    def __call__(self, img, boxes=None):
+        img = self.resize(img)
+        if boxes is not None:
+            boxes = self.resize_boxes(boxes, img.shape[0], img.shape[1])
+        return img, boxes
+
+    def resize(self, img):
+        """Resize image to target size while maintaining aspect ratio"""
+        return cv2.resize(img, self.size)
+
+    def resize_boxes(self, boxes, h, w):
+        """Rescale bounding boxes to match the resized image dimensions"""
+        boxes[:, 0] *= w  # rescale x1
+        boxes[:, 1] *= h  # rescale y1
+        boxes[:, 2] *= w  # rescale x2
+        boxes[:, 3] *= h  # rescale y2
+        return boxes
+
+
+# 非极大值抑制（NMS）函数
+def non_max_suppression(predictions, conf_threshold=0.5, nms_threshold=0.4):
+    """
+    Perform Non-Maximum Suppression (NMS) on the predicted boxes
+    :param predictions: list of predictions [batch, boxes, class, score, x1, y1, x2, y2]
+    :param conf_threshold: confidence score threshold to keep
+    :param nms_threshold: NMS threshold to decide if two boxes overlap too much
+    :return: filtered predictions
+    """
+    final_predictions = []
+    
+    for batch in predictions:
+        # Apply NMS for each image in the batch
+        boxes = batch[:, 4:8]  # [x1, y1, x2, y2]
+        scores = batch[:, 3]  # confidence score
+        classes = batch[:, 2]  # class predictions
+        
+        # Perform NMS for each class
+        keep = nms(boxes, scores, nms_threshold)
+        
+        # Filter out low confidence boxes
+        final_preds = batch[keep]
+        final_preds = final_preds[final_preds[:, 3] > conf_threshold]  # Keep high confidence boxes
+        final_predictions.append(final_preds)
+    
+    return final_predictions
+
+
+# 损失计算：例如，YOLO目标检测模型的损失计算
+def compute_loss(pred, targets, model, lambda_coord=5, lambda_noobj=0.5):
+    """
+    Compute the YOLO loss function. This computes:
+    1. The coordinate loss (e.g., for bounding boxes).
+    2. The object loss (e.g., for object confidence).
+    3. The class loss (e.g., for class predictions).
+    :param pred: predicted outputs of the model
+    :param targets: ground truth labels
+    :param model: the model (needed for grid size and number of anchors)
+    :param lambda_coord: coefficient for coordinate loss
+    :param lambda_noobj: coefficient for the no object confidence loss
+    :return: loss values
+    """
+    # Extract model parameters
+    anchors = model.anchors
+    grid_size = model.grid_size
+    num_classes = model.num_classes
+    
+    # Compute losses for objectness, class, and coordinates
+    obj_loss = 0
+    class_loss = 0
+    coord_loss = 0
+    noobj_loss = 0
+    
+    # Calculate object loss (IoU with ground truth)
+    for i in range(len(pred)):
+        # Assuming pred[i] contains (batch_size, grid_size, grid_size, num_anchors, 5 + num_classes)
+        pred_obj = pred[i][:, :, :, :, 0]  # objectness score
+        target_obj = targets[i][:, :, :, :, 0]  # ground truth objectness
+        pred_coord = pred[i][:, :, :, :, 1:5]  # bounding box predictions
+        target_coord = targets[i][:, :, :, :, 1:5]  # ground truth coordinates
+        pred_class = pred[i][:, :, :, :, 5:]  # class scores
+        target_class = targets[i][:, :, :, :, 5:]  # ground truth classes
+
+        # Calculate loss for object (only where object is present)
+        obj_loss += F.mse_loss(pred_obj[target_obj == 1], target_obj[target_obj == 1])
+
+        # Calculate loss for no object (penalize false positives)
+        noobj_loss += F.mse_loss(pred_obj[target_obj == 0], target_obj[target_obj == 0])
+        
+        # Coordinate loss: mean squared error for predicted vs. true coordinates
+        coord_loss += F.mse_loss(pred_coord[target_obj == 1], target_coord[target_obj == 1])
+        
+        # Class loss: cross entropy for classification
+        class_loss += F.cross_entropy(pred_class[target_obj == 1], target_class[target_obj == 1])
+    
+    # Apply weights to the losses
+    total_loss = lambda_coord * coord_loss + lambda_noobj * noobj_loss + obj_loss + class_loss
+    
+    return total_loss
+
+
+# 测试函数：计算IoU
+def bbox_iou(box1, box2):
+    """
+    Compute Intersection over Union (IoU) between two bounding boxes
+    :param box1: [x1, y1, x2, y2]
+    :param box2: [x1, y1, x2, y2]
+    :return: IoU value
+    """
+    # Calculate intersection area
+    inter_x1 = max(box1[0], box2[0])
+    inter_y1 = max(box1[1], box2[1])
+    inter_x2 = min(box1[2], box2[2])
+    inter_y2 = min(box1[3], box2[3])
+    
+    inter_area = max(0, inter_x2 - inter_x1) * max(0, inter_y2 - inter_y1)
+    
+    # Calculate union area
+    box1_area = (box1[2] - box1[0]) * (box1[3] - box1[1])
+    box2_area = (box2[2] - box2[0]) * (box2[3] - box2[1])
+    
+    union_area = box1_area + box2_area - inter_area
+    
+    # IoU
+    iou = inter_area / union_area
+    return iou
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torch.utils.data import DataLoader
+import numpy as np
+import os
+import time
+import cv2
+import matplotlib.pyplot as plt
+from utils import *  # 包含数据增强、NMS、损失计算等实用工具
+from models import YOLOv8  # 假设YOLOv8模型是该模块中的模型
+
+
+# 配置超参数
+batch_size = 16                   # 每批次大小
+learning_rate = 0.001             # 学习率
+epochs = 100                      # 训练的轮数
+image_size = 640                  # 输入图像大小（YOLOv8常用较大的输入大小）
+num_classes = 80                  # 类别数（以COCO为例）
+train_dataset = './data/train.txt' # 训练集路径
+val_dataset = './data/val.txt'    # 验证集路径
+
+# 检查是否有可用的GPU
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+# 加载数据集
+train_data = YoloDataset(train_dataset, image_size=image_size)
+val_data = YoloDataset(val_dataset, image_size=image_size)
+train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=True, num_workers=4, pin_memory=True)
+val_loader = DataLoader(val_data, batch_size=batch_size, shuffle=False, num_workers=4, pin_memory=True)
+
+# 初始化YOLOv8模型
+model = YOLOv8(num_classes=num_classes).to(device)
+
+# 使用预训练权重加载
+def load_pretrained_weights(model, weights_path):
+    # 加载预训练的模型权重
+    checkpoint = torch.load(weights_path)
+    model.load_state_dict(checkpoint['model_state_dict'])
+
+# 选择损失函数（YOLOv8损失函数）
+criterion = YoloLoss(num_classes=num_classes, ignore_thresh=0.5)  # 假设使用YOLOv8特有的损失函数
+
+# 优化器设置（使用YOLOv8优化器设置，通常采用Adam或者SGD）
+optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+
+# 学习率调度器（如余弦退火等）
+scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs)
+
+# 训练函数
+def train_one_epoch(epoch, model, train_loader, optimizer, criterion):
+    model.train()  # 设置模型为训练模式
+    running_loss = 0.0
+    
+    # 遍历每个batch
+    for batch_idx, (images, targets) in enumerate(train_loader):
+        images = images.to(device)
+        targets = targets.to(device)
+
+        # 前向传播
+        optimizer.zero_grad()
+        outputs = model(images)
+        
+        # 计算损失
+        loss = criterion(outputs, targets)
+        
+        # 反向传播
+        loss.backward()
+        optimizer.step()
+
+        running_loss += loss.item()
+
+        # 每100个batch打印一次损失
+        if batch_idx % 100 == 0:
+            print(f"Epoch [{epoch}/{epochs}], Batch [{batch_idx}/{len(train_loader)}], Loss: {loss.item():.4f}")
+    
+    # 返回该epoch的平均损失
+    return running_loss / len(train_loader)
+
+# 验证函数
+def validate(model, val_loader, criterion):
+    model.eval()  # 设置模型为验证模式
+    val_loss = 0.0
+    with torch.no_grad():  # 禁用梯度计算，减少内存使用
+        for images, targets in val_loader:
+            images = images.to(device)
+            targets = targets.to(device)
+
+            # 前向传播
+            outputs = model(images)
+            loss = criterion(outputs, targets)
+
+            val_loss += loss.item()
+
+    # 返回验证集的平均损失
+    return val_loss / len(val_loader)
+
+# 保存模型
+def save_model(epoch, model, optimizer, loss, save_path='./yolov8.pth'):
+    print(f"Saving model at epoch {epoch} with loss {loss:.4f}")
+    torch.save({
+        'epoch': epoch,
+        'model_state_dict': model.state_dict(),
+        'optimizer_state_dict': optimizer.state_dict(),
+        'loss': loss
+    }, save_path)
+
+# 可视化训练过程（显示图片和预测结果）
+def visualize_predictions(model, val_loader):
+    model.eval()
+    with torch.no_grad():
+        for images, targets in val_loader:
+            images = images.to(device)
+            predictions = model(images)
+            
+            # 假设YOLOv8模型的输出需要经过后处理
+            predictions = post_process(predictions)
+            
+            # 将预测结果转换为图片
+            for i in range(len(images)):
+                img = images[i].cpu().numpy().transpose(1, 2, 0)
+                img = np.clip(img, 0, 255).astype(np.uint8)
+                plt.imshow(img)
+                plt.show()
+            break  # 只显示一个batch的结果
+
+# 开始训练
+def train():
+    for epoch in range(epochs):
+        # 训练阶段
+        train_loss = train_one_epoch(epoch, model, train_loader, optimizer, criterion)
+
+        # 验证阶段
+        val_loss = validate(model, val_loader, criterion)
+
+        print(f"Epoch [{epoch}/{epochs}], Training Loss: {train_loss:.4f}, Validation Loss: {val_loss:.4f}")
+
+        # 每5个epoch保存一次模型
+        if epoch % 5 == 0:
+            save_model(epoch, model, optimizer, train_loss)
+
+        # 可视化预测结果
+        if epoch % 10 == 0:
+            visualize_predictions(model, val_loader)
+
+        # 学习率调度器更新
+        scheduler.step()
+
+# 调用训练函数开始训练
+if __name__ == '__main__':
+    start_time = time.time()
+    train()
+    print(f"Training completed in {(time.time() - start_time) / 60:.2f} minutes")
+def parse_args():
+    import argparse
+    parser = argparse.ArgumentParser(description="YOLOv8 PyTorch Training")
+
+    # 类别数：不包括背景
+    parser.add_argument("--num-classes", default=80, type=int, 
+                        help="Number of classes (excluding background). For COCO, it's 80.")
+    
+    # 训练使用的设备，默认使用cuda（GPU）
+    parser.add_argument("--device", default="cuda", help="Training device. Options: 'cuda', 'cpu'.")
+
+    # batch_size：每次训练中样本的数量
+    parser.add_argument("-b", "--batch-size", default=16, type=int, 
+                        help="Batch size for training. Default is 16.")
+    
+    # 训练的总轮次
+    parser.add_argument("--epochs", default=50, type=int, metavar="N", 
+                        help="Number of total epochs to train.")
+    
+    # 初始学习率
+    parser.add_argument('--lr', default=0.001, type=float, 
+                        help='Initial learning rate. Default is 0.001.')
+    
+    # 打印频率：多少个batch打印一次训练信息
+    parser.add_argument('--print-freq', default=10, type=int, 
+                        help='Print frequency (in terms of batches).')
+
+    # 使用混合精度训练。较旧的GPU可能不支持，可以设置为False来关闭。
+    parser.add_argument("--amp", default=True, type=bool, 
+                        help="Use mixed precision training with torch.cuda.amp. Default is True.")
+
+    # 是否使用预训练模型进行初始化
+    parser.add_argument("--pretrained", default=True, type=bool, 
+                        help="Whether to use pre-trained weights (e.g., from YOLOv8 backbone).")
+
+    # 数据集路径，YOLOv8通常需要指定训练和验证集的路径
+    parser.add_argument("--train-data", default="./data/train", type=str, 
+                        help="Path to the training dataset.")
+    parser.add_argument("--val-data", default="./data/val", type=str, 
+                        help="Path to the validation dataset.")
+
+    # 是否启用数据增强
+    parser.add_argument("--augmentation", default=True, type=bool, 
+                        help="Whether to use data augmentation techniques (e.g., flipping, scaling).")
+
+    # 模型保存的路径
+    parser.add_argument("--save-dir", default="./yolov8_models", type=str, 
+                        help="Directory to save the trained model checkpoints.")
+
+    # 权重更新的策略（比如SGD、Adam）
+    parser.add_argument("--optimizer", default="adam", choices=["adam", "sgd"], type=str, 
+                        help="Optimizer to use for training. Options: 'adam', 'sgd'. Default is 'adam'.")
+
+    # 是否保存训练日志
+    parser.add_argument("--save-log", default=True, type=bool, 
+                        help="Whether to save training logs (e.g., tensorboard, .log files).")
+
+    # GPU数量：用于多卡训练
+    parser.add_argument("--num-gpus", default=1, type=int, 
+                        help="Number of GPUs to use for training. Default is 1.")
+    
+    # 是否使用混合数据并行（DataParallel）进行多GPU训练
+    parser.add_argument("--use-dp", default=False, type=bool, 
+                        help="Whether to use Data Parallel (DP) for multi-GPU training. Default is False.")
+    
+    # 是否启用学习率调度器
+    parser.add_argument("--lr-scheduler", default="cosine", choices=["step", "cosine", "linear"], type=str,
+                        help="Learning rate scheduler. Options: 'step', 'cosine', 'linear'. Default is 'cosine'.")
+    
+    # 训练中是否随机裁剪图像
+    parser.add_argument("--random-crop", default=True, type=bool, 
+                        help="Whether to use random cropping during training.")
+    
+    # 输入图像大小，YOLOv8可能需要指定较高分辨率
+    parser.add_argument("--image-size", default=640, type=int, 
+                        help="Input image size. Default is 640 pixels.")
+
+    args = parser.parse_args()
+
+    return args
+import torch
+import cv2
+import numpy as np
+import os
+import argparse
+from pathlib import Path
+from torchvision import transforms
+from PIL import Image
+import time
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="YOLOv8 PyTorch Inference")
+    parser.add_argument("--num-classes", default=80, type=int, help="Number of classes.")
+    parser.add_argument("--device", default="cuda", help="Device to run the model on. Options: 'cuda', 'cpu'.")
+    parser.add_argument("--batch-size", default=1, type=int, help="Batch size for inference.")
+    parser.add_argument("--image-size", default=640, type=int, help="Input image size.")
+    parser.add_argument("--model-path", required=True, type=str, help="Path to the trained model.")
+    parser.add_argument("--input", required=True, type=str, help="Path to input image or video.")
+    parser.add_argument("--output", default="./output", type=str, help="Directory to save output.")
+    parser.add_argument("--conf-threshold", default=0.5, type=float, help="Confidence threshold for predictions.")
+    parser.add_argument("--iou-threshold", default=0.4, type=float, help="IoU threshold for NMS.")
+    parser.add_argument("--show", default=False, type=bool, help="Whether to show the prediction.")
+    return parser.parse_args()
+
+def load_model(model_path, device):
+    # Load a pre-trained YOLOv8 model
+    model = torch.load(model_path)
+    model.eval()
+    model.to(device)
+    return model
+
+def preprocess_image(image_path, image_size, device):
+    # Load image
+    img = Image.open(image_path).convert('RGB')
+    # Resize image
+    transform = transforms.Compose([
+        transforms.Resize((image_size, image_size)),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+    ])
+    img_tensor = transform(img).unsqueeze(0).to(device)
+    return img_tensor, img
+
+def postprocess_output(pred, conf_threshold=0.5, iou_threshold=0.4):
+    # Filter boxes based on confidence threshold
+    pred = pred[pred[..., 4] > conf_threshold]
+    
+    # Apply NMS (Non-Maximum Suppression)
+    boxes = pred[..., :4]
+    scores = pred[..., 4] * pred[..., 5:].max(dim=-1)[0]
+    keep = torchvision.ops.nms(boxes, scores, iou_threshold)
+    
+    # Return filtered boxes, labels, and scores
+    return boxes[keep], scores[keep], pred[keep]
+
+def draw_boxes(image, boxes, scores, class_ids, class_names, colors):
+    # Convert image to numpy array
+    image = np.array(image)
+    
+    # Draw bounding boxes and labels
+    for i, box in enumerate(boxes):
+        x1, y1, x2, y2 = box.int().cpu().numpy()
+        label = f"{class_names[class_ids[i]]} {scores[i]:.2f}"
+        color = colors[class_ids[i]]
+        
+        # Draw the bounding box
+        cv2.rectangle(image, (x1, y1), (x2, y2), color, 2)
+        
+        # Draw label
+        cv2.putText(image, label, (x1, y1-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+    
+    return image
+
+def save_output(output_dir, image_name, image):
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    output_path = os.path.join(output_dir, image_name)
+    cv2.imwrite(output_path, image)
+
+def inference(args):
+    # Set device
+    device = torch.device(args.device if torch.cuda.is_available() else "cpu")
+    
+    # Load model
+    model = load_model(args.model_path, device)
+    
+    # Define class names (You can change this according to the dataset you used for training)
+    class_names = [str(i) for i in range(args.num_classes)]
+    
+    # Define colors for drawing boxes
+    colors = np.random.randint(0, 255, size=(args.num_classes, 3), dtype=int)
+    
+    # Process input image
+    img_tensor, img = preprocess_image(args.input, args.image_size, device)
+    
+    # Run inference
+    with torch.no_grad():
+        start_time = time.time()
+        pred = model(img_tensor)  # Shape: [batch_size, num_boxes, 6 (xywh+confidence+class)]
+        print(f"Inference time: {time.time() - start_time:.4f}s")
+    
+    # Post-process output
+    boxes, scores, labels = postprocess_output(pred[0], conf_threshold=args.conf_threshold, iou_threshold=args.iou_threshold)
+    
+    # Convert tensor boxes to image coordinates
+    boxes = boxes * img.size[0]  # scale boxes to the original image size
+    
+    # Draw bounding boxes and labels on the image
+    output_image = draw_boxes(img, boxes, scores, labels.cpu().numpy(), class_names, colors)
+    
+    # Save or show the result
+    save_output(args.output, Path(args.input).name, output_image)
+    
+    if args.show:
+        cv2.imshow("Prediction", output_image)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+
+if __name__ == "__main__":
+    args = parse_args()
+    inference(args)
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torch.utils.data import DataLoader
+import matplotlib.pyplot as plt
+from data import train_loader, valid_loader  # 假设你已经准备了训练和验证数据集
+from model import UNet
+
+# 假设你已经定义了一个UNet模型，输入为2个图像（通道数为7）
+model = UNet(7 * 2, 1)  # 输入两个图像对（每个图像有7个通道），输出一个单通道的二值变化图
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+model.to(device)
+
+# 定义损失函数和优化器
+criterion = nn.BCEWithLogitsLoss()  # 二元交叉熵损失
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-5)
+
+train_loss_history = []
+val_loss_history = []
+
+# 训练过程
+def main(args):
+    for epoch in range(args.epochs):
+        model.train()
+        train_loss = 0.0
+        
+        for batch_X1, batch_X2, batch_Y in train_loader:
+            batch_X1, batch_X2, batch_Y = batch_X1.to(device), batch_X2.to(device), batch_Y.to(device)
+            
+            optimizer.zero_grad()
+            # 拼接两个图像（在通道维度上拼接）
+            batch_X = torch.cat((batch_X1, batch_X2), dim=1)  # 合并两个输入图像
+            
+            # 前向传播
+            outputs = model(batch_X)
+            
+            # 计算损失
+            loss = criterion(outputs, batch_Y)
+            loss.backward()
+            optimizer.step()
+            train_loss += loss.item()
+
+        train_loss /= len(train_loader)
+        train_loss_history.append(train_loss)
+
+        # 验证过程
+        model.eval()
+        val_loss = 0.0
+        with torch.no_grad():
+            for batch_X1, batch_X2, batch_Y in valid_loader:
+                batch_X1, batch_X2, batch_Y = batch_X1.to(device), batch_X2.to(device), batch_Y.to(device)
+                batch_X = torch.cat((batch_X1, batch_X2), dim=1)  # 合并两个输入图像
+                outputs = model(batch_X)
+                loss = criterion(outputs, batch_Y)
+                val_loss += loss.item()
+
+        val_loss /= len(valid_loader)
+        val_loss_history.append(val_loss)
+
+        print(f'Epoch [{epoch+1}/{args.epochs}], Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}')
+
+    # 保存模型
+    torch.save(model.state_dict(), "model_save.pth")
+
+    # 可视化训练过程
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(20, 10))
+    ax1.plot(train_loss_history, label='Train Loss')
+    ax1.plot(val_loss_history, label='Validation Loss')
+    ax1.set_title('Loss Over Epochs')
+    ax1.set_ylabel('Loss')
+    ax1.set_xlabel('Epoch')
+    ax1.legend()
+
+    plt.show()
+
+def parse_args():
+    import argparse
+    parser = argparse.ArgumentParser(description="pytorch training")
+    parser.add_argument("--num-classes", default=1, type=int)  # 类别数；通常为1
+    parser.add_argument("--device", default="cuda", help="training device")  # 默认使用GPU
+    parser.add_argument("-b", "--batch-size", default=2, type=int)  # batch_size
+    parser.add_argument("--epochs", default=50, type=int, metavar="N", help="number of total epochs to train")
+    parser.add_argument('--lr', default=0.0001, type=float, help='initial learning rate')  # 学习率
+    parser.add_argument('--print-freq', default=1, type=int, help='print frequency')  # 打印频率
+    parser.add_argument("--amp", default=True, type=bool, help="Use mixed precision training")
+    args = parser.parse_args()
+    return args
+    
+if __name__ == '__main__':
+    args = parse_args()
+    main(args)
+
+import torch.nn as nn
+from osgeo import gdal
+import numpy as np
+import torch
+import cv2
+from model import UNet  # 确保你的模型文件正确导入
+
+# 加载模型
+model = UNet(7 * 2, 1)  # 输入通道数为两个图像（每个图像有7个通道），因此总通道数为 7*2
+model.load_state_dict(torch.load(r''))  # 使用r前缀解决路径问题
+model.eval()
+
+# 读取前后两张图像文件
+image_file_1 = r''  # 图像1
+image_file_2 = r''  # 图像2，假设是变化检测的后图
+
+# 打开两幅图像
+rsdataset_1 = gdal.Open(image_file_1)
+rsdataset_2 = gdal.Open(image_file_2)
+
+# 读取两幅图像的多个波段（假设每幅图像有7个波段）
+image_data_1 = np.stack([rsdataset_1.GetRasterBand(i).ReadAsArray() for i in range(1, 8)], axis=0)
+image_data_2 = np.stack([rsdataset_2.GetRasterBand(i).ReadAsArray() for i in range(1, 8)], axis=0)
+
+# 合并两幅图像（拼接在通道维度上）
+image_data = np.concatenate((image_data_1, image_data_2), axis=0)  # 拼接两个图像（7通道 + 7通道）
+
+# 将图像数据转换为 NumPy 数组并调整大小
+image_data = image_data.transpose(1, 2, 0)  # 转换为 [H, W, C] 格式
+image_data_resized = cv2.resize(image_data, (256, 256))  # 调整图像大小
+
+# 将调整后的数据转换回 [C, H, W] 格式并转换为 PyTorch 张量
+image_data_resized = image_data_resized.transpose(2, 0, 1)  # 转回 [C, H, W]
+test_images = torch.tensor(image_data_resized).float().unsqueeze(0)  # 扩展batch维度，变为 [1, C, H, W]
+
+# 模型预测
+outputs = model(test_images)
+
+# 将预测结果二值化，认为值大于0.5为变化区域
+predicted_mask = (outputs > 0.5).float().squeeze().detach().numpy()
+
+# 将预测结果转换为 8 位掩码图像（0-255）
+predicted_mask = (predicted_mask * 255).astype(np.uint8)
+
+# 转换原始图像为 8 位三通道图像（用于显示）
+original_image_1 = np.transpose(image_data_1, (1, 2, 0))  # 转换为 [H, W, C] 格式
+original_image_1 = cv2.cvtColor(original_image_1, cv2.COLOR_RGB2BGR)  # 转换为BGR格式
+
+# 将预测的变化掩码调整到与原图相同的大小
+predicted_mask_resized = cv2.resize(predicted_mask, (original_image_1.shape[1], original_image_1.shape[0]))
+
+# 创建一个三通道的彩色掩码，红色通道显示预测掩码
+colored_mask = np.zeros_like(original_image_1)
+colored_mask[:, :, 2] = predicted_mask_resized   # 将掩码设置为红色通道
+
+# 将彩色掩码叠加到原始图像上
+result_image = cv2.addWeighted(original_image_1, 0.7, colored_mask, 0.3, 0)
+
+# 显示带有预测结果的图像
+cv2.imshow('Prediction on Original Image', result_image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+# 输出预测的掩码
+print(predicted_mask)
+
+# 如果你想保存带有预测结果的图像，可以使用以下代码：
+cv2.imwrite(r'output_with_prediction.png', result_image)  # 保存结果图像
+import torch.nn as nn
+from osgeo import gdal
+import numpy as np
+import torch
+import cv2
+import os
+from unet import UNet
+
+def predict_and_save(image_file1, image_file2, model, output_dir, threshold=0.8):
+    # 加载和预处理前期图像和后期图像
+    rsdataset1 = gdal.Open(image_file1)
+    rsdataset2 = gdal.Open(image_file2)
+    
+    # 假设每个图像有三个波段，分别读取
+    image_data1 = np.stack([rsdataset1.GetRasterBand(i).ReadAsArray() for i in range(1, 4)], axis=0)
+    image_data2 = np.stack([rsdataset2.GetRasterBand(i).ReadAsArray() for i in range(1, 4)], axis=0)
+    
+    # 将前期和后期图像堆叠为一个输入
+    test_images = torch.tensor(np.stack([image_data1, image_data2], axis=0)).float().unsqueeze(0)  # (1, 2, 3, H, W)
+    
+    # 模型预测
+    with torch.no_grad():
+        outputs = model(test_images)
+    
+    # 将预测结果二值化
+    predicted_mask = (outputs > threshold).float().squeeze().numpy()
+    
+    # 将预测结果转换为 8 位掩码图像（0-255）
+    predicted_mask = (predicted_mask * 255).astype(np.uint8)
+    
+    # 转换原始图像为 8 位三通道图像
+    original_image1 = np.transpose(image_data1, (1, 2, 0))  # 转换为 [H, W, C] 格式
+    original_image1 = cv2.cvtColor(original_image1, cv2.COLOR_RGB2BGR)
+    
+    original_image2 = np.transpose(image_data2, (1, 2, 0))  # 转换为 [H, W, C] 格式
+    original_image2 = cv2.cvtColor(original_image2, cv2.COLOR_RGB2BGR)
+    
+    # 创建一个三通道的彩色掩码，红色通道显示预测掩码
+    colored_mask = np.zeros_like(original_image1)
+    colored_mask[:, :, 2] = predicted_mask  # 将掩码设置为红色
+    
+    # 将彩色掩码叠加到原始图像上（使用前期图像）
+    result_image = cv2.addWeighted(original_image1, 0.7, colored_mask, 0.3, 0)
+    
+    # 保存结果图像
+    base_name1 = os.path.basename(image_file1)
+    base_name2 = os.path.basename(image_file2)
+    result_file = os.path.join(output_dir, f"predicted_{base_name1}_{base_name2}")
+    cv2.imwrite(result_file, result_image)
+    print(f"Saved prediction for {image_file1} and {image_file2} to {result_file}")
+
+def batch_predict_and_save(image_dir, output_dir, model, threshold=0.8):
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    # 获取前期和后期图像对，假设文件名是成对出现的
+    image_files = sorted([f for f in os.listdir(image_dir) if f.endswith('.png')])
+    
+    for i in range(0, len(image_files), 2):  # 假设每对图像由两个文件组成
+        image_file1 = os.path.join(image_dir, image_files[i])
+        image_file2 = os.path.join(image_dir, image_files[i+1])
+        
+        # 执行预测并保存
+        predict_and_save(image_file1, image_file2, model, output_dir, threshold)
+
+# 初始化模型
+model = UNet(6, 1)  # 输入为两个图像，所以输入通道数为 6（每个图像3个通道，共2个图像）
+model.load_state_dict(torch.load(''))
+model.eval()
+
+# 图像输入目录和预测输出目录
+image_dir = ''
+output_dir = 'predictions2'
+
+# 批量预测和保存
+batch_predict_and_save(image_dir, output_dir, model, threshold=0.8)
+import customtkinter as ctk
+import time
+import threading
+
+class ImageProcessor:
+    def __init__(self, main):
+        self.main = main
+
+        # 初始化进度条，没有最大最小值
+        self.progress_bar = ctk.CTkProgressBar(self.main)
+        self.progress_bar.grid(row=1, column=0, padx=20, pady=10, sticky="nsew")
+
+        # 创建一个按钮，点击后开始进度条动画
+        self.start_button = ctk.CTkButton(self.main, text="Start", command=self.start_progress_bar)
+        self.start_button.grid(row=2, column=0, padx=20, pady=10, sticky="nsew")
+
+    def start_progress_bar(self):
+        """
+        启动进度条，来回动
+        """
+        # 使用线程来避免阻塞主线程
+        threading.Thread(target=self.animate_progress_bar, daemon=True).start()
+
+    def animate_progress_bar(self):
+        """
+        让进度条来回动
+        """
+        while True:
+            # 从0到1的动画
+            for i in range(101):
+                self.progress_bar.set(i / 100)  # 更新进度条的当前值
+                self.main.update_idletasks()  # 确保UI更新
+                time.sleep(0.05)  # 延迟，模拟进度
+
+            # 从1到0的动画
+            for i in range(100, -1, -1):
+                self.progress_bar.set(i / 100)  # 更新进度条的当前值
+                self.main.update_idletasks()  # 确保UI更新
+                time.sleep(0.05)  # 延迟，模拟进度
+
+# 使用自定义tkinter窗口
+if __name__ == "__main__":
+    root = ctk.CTk()
+
+    # 创建应用程序实例
+    app = ImageProcessor(root)
+
+    # 启动GUI
+    root.mainloop()
