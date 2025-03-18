@@ -39,8 +39,10 @@ def shapefile_to_segmentation_label(shapefile_path, raster_template_path, output
     print(f"标签图像保存为: {output_path}")
 
 # 示例用法
-shapefile_path = r'E:\湿地制图\11.9\11.9result\WetlandXJ_202308_T45_AW_70_label.shp'
-raster_template_path = r'E:\湿地制图\11.9\WetlandXJ_202308_T45_AW_70.tif'  # 栅格图像模板
+# shapefile_path = r'E:\sentinel2\Tarim\1\11.shp'
+# raster_template_path = r'E:\sentinel2\Tarim\1\2022.tif'  # 栅格图像模板
+shapefile_path = r'E:\sentinel2\Tarim\2.23\Export_Output.shp'
+raster_template_path = r'E:\sentinel2\Tarim\2.23\yangben\2022\20221.tif'  # 栅格图像模板
 output_path = 'output_label_image.png'
 
 shapefile_to_segmentation_label(shapefile_path, raster_template_path, output_path, class_value=1)

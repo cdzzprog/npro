@@ -1,20 +1,20 @@
-def remove_empty_lines(input_file, output_file):
-    try:
-        # 打开并读取输入文件
-        with open(input_file, 'r', encoding='utf-8') as infile:
-            lines = infile.readlines()
+# def remove_empty_lines(input_file, output_file):
+#     try:
+#         # 打开并读取输入文件
+#         with open(input_file, 'r', encoding='utf-8') as infile:
+#             lines = infile.readlines()
         
-        # 过滤掉空行，空行是指去除前后空格后的内容为空的行
-        non_empty_lines = [line for line in lines if line.strip() != '']
+#         # 过滤掉空行，空行是指去除前后空格后的内容为空的行
+#         non_empty_lines = [line for line in lines if line.strip() != '']
         
-        # 打开输出文件，写入去除空行后的内容
-        with open(output_file, 'w', encoding='utf-8') as outfile:
-            outfile.writelines(non_empty_lines)
+#         # 打开输出文件，写入去除空行后的内容
+#         with open(output_file, 'w', encoding='utf-8') as outfile:
+#             outfile.writelines(non_empty_lines)
         
-        print(f"处理完成，空行已移除，结果保存为 '{output_file}'")
+#         print(f"处理完成，空行已移除，结果保存为 '{output_file}'")
     
-    except Exception as e:
-        print(f"处理文件时发生错误: {e}")
+#     except Exception as e:
+#         print(f"处理文件时发生错误: {e}")
 
 
 
@@ -24,8 +24,8 @@ def remove_empty_lines(input_file, output_file):
 
 
 # # 调用函数，输入和输出文件的路径
-# input_file =r'C:\Users\龙儿璨\Desktop\dd.txt'  # 输入文件路径（原始文件）
-# output_file = r'C:\Users\龙儿璨\Desktop\output.txt'  # 输出文件路径（处理后文件）
+# input_file =r''  # 输入文件路径（原始文件）
+# output_file = r''  # 输出文件路径（处理后文件）
 
 # # 执行删除空行操作
 # remove_empty_lines(input_file, output_file)
@@ -57,8 +57,7 @@ def check_empty_lines(doc_path):
         print("文档中没有空行")
 
 # 示例用法
-doc_path = r'C:\Users\龙儿璨\Desktop\地理大模型样本自动标注系统V1.0-源代码.docx'  # 替换为实际的文档路径
-# doc_path = r'C:\Users\龙儿璨\Desktop\地理大模型样本自动标注系统V1.0-源代码.docx'   # 替换为实际的文档路径
+doc_path = r'C:\Users\龙儿璨\Desktop\高原地区潜在自然灾害风险评估系统 V1.0 源代码(2).docx'  # 替换为实际的文档路径
 check_empty_lines(doc_path)
 
 
@@ -100,6 +99,6 @@ check_empty_lines(doc_path)
 #         print("文档中没有空行")
 
 # # 示例用法
-# doc_path = r'C:\Users\龙儿璨\Desktop\地理大模型样本自动标注系统V1.0-源代码.pdf'  # 替换为实际的文档路径
+# doc_path = r''  # 替换为实际的文档路径
 # check_empty_lines_pdf(doc_path)
 
