@@ -4,7 +4,7 @@ from osgeo import gdal
 from tqdm import tqdm
  
  
-def crop_and_tile_tif(input_tif, output_dir, tile_size=(512, 512), keep_geo='True', suffix='.tif'):
+def crop_and_tile_tif(input_tif, output_dir, tile_size=(256, 256), keep_geo='True', suffix='.tif'):
     """
     使用GDAL裁剪并分块读取和写入GeoTIFF图像，并保存为小块。
     :param input_tif: 输入的tif文件路径或包含tif文件的目录
@@ -87,8 +87,8 @@ def main():
     parser = argparse.ArgumentParser(description='使用GDAL裁剪并分块GeoTIFF文件。')
  
     # 添加命令行参数
-    parser.add_argument('--input_tif', default=r'E:\sentinel2\weiyi\S2B_MSIL2A_20190726T060639_N9999_R134_T42SWH_20230512T114325.SAFE\S2B_MSIL2A_20190726T060639_N9999_R134_T42SWH_20230512T114325.tif', type=str, help='输入的tif文件路径或包含tif文件的目录')
-    parser.add_argument('--output_dir', default=r'E:\sentinel2\Tarim\Sentinel-test', type=str, help='输出切块文件的目录')
+    parser.add_argument('--input_tif', default=r'E:\sentinel2\pamieryou\2022.7.22\S2A_MSIL2A_20220722T055651_N0400_R091_T43SCC_20220722T092103.SAFE\S2A_MSIL2A_20220722T055651_N0400_R091_T43SCC_20220722T092103.tif', type=str, help='输入的tif文件路径或包含tif文件的目录')
+    parser.add_argument('--output_dir', default=r'E:\data\images', type=str, help='输出切块文件的目录')
     parser.add_argument('--tile_size', type=int, nargs=2, default=[256, 256], help='切块大小 (宽度, 高度)，默认为 512x512')
     parser.add_argument('--keep_geo', type=str, default='True', help='是否保留地理坐标信息，默认不保留')
     parser.add_argument('--suffix', type=str, default='.tif', help='文件后缀格式，默认为.tif')

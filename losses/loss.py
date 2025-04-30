@@ -7,9 +7,9 @@ import torch.nn.functional as F
 
 
 
-nn.BCELoss(F.sigmoid(input), target)
-#多分类交叉熵, 用这个 loss 前面不需要加 Softmax 层
-nn.CrossEntropyLoss(input, target)
+# nn.BCELoss(F.sigmoid(input), target)
+# #多分类交叉熵, 用这个 loss 前面不需要加 Softmax 层
+# nn.CrossEntropyLoss(input, target)
 
 
 import torch

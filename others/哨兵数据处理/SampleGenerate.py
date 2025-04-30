@@ -233,19 +233,19 @@ def findsamesample(refdir, labeldir, output):
         
 def main():
     # 矢量转栅格
-    # shp = r'D:\work\Dataset\ChangeDetection\Suzhou\shp\T1_seg.shp'
-    # templatePic = r'D:\work\Dataset\ChangeDetection\Suzhou\image\T1.tif'
-    # # output = r'D:\work\code\Dataset\ChangeDetection\Suzhou\label\T2_seg.tif'
-    # output = r'D:\work\Dataset\ChangeDetection\Suzhou\label\T1_label.tif'
-    # field = 'test'
-    # nodata = 0
-    # shp2Raster(shp,templatePic,output,field,nodata)
+    shp = r'E:\data001\test\insarDA000.shp'
+    templatePic = r'E:\data001\test\insar\insare10.tif'
+    # output = r'D:\work\code\Dataset\ChangeDetection\Suzhou\label\T2_seg.tif'
+    output = r'E:\data001\test\label\insare10.tif'
+    field = 'label'
+    nodata = 0
+    shp2Raster(shp,templatePic,output,field,nodata)
     # merge2CDlabel()
-    image = r'D:\work\Dataset\Tarim\Sentinel-2\tif\11_November.tif'
-    output = r'D:\work\Dataset\Tarim\Sentinel-2\tif_512\11_November'
-    name = 'Tarim'
-    # clipSample(image, 256, output, name)
-    bigMapClip(image, 512, output, name)
+    # image = r'D:\work\Dataset\Tarim\Sentinel-2\tif\11_November.tif'
+    # output = r'D:\work\Dataset\Tarim\Sentinel-2\tif_512\11_November'
+    # name = 'Tarim'
+    # # clipSample(image, 256, output, name)
+    # bigMapClip(image, 512, output, name)
     # t1dir = 'D:\\work\\code\\Dataset\\ChangeDetection\\Suzhou\\sample\\train\\IMG_T1\\'
     # t2dir = 'D:\\work\\code\\Dataset\\ChangeDetection\\Suzhou\\sample\\train\\IMG_T2\\'
     # labeldir = 'D:\\work\\code\\Dataset\\ChangeDetection\\Suzhou\\sample\\train\\LABEL\\'

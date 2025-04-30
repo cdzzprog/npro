@@ -26,7 +26,7 @@
 import geopandas as gpd
 
 # 加载Shapefile
-shapefile_path = r'C:\Users\龙儿璨\Desktop\湿地制图\label\WetlandXJ_202308_T43_PW_34label11.shp'
+shapefile_path = r'E:\data001\test\insarDA0.shp'
 gdf = gpd.read_file(shapefile_path)
 
 # 计算每个几何的面积
@@ -36,12 +36,12 @@ gdf['area'] = gdf.geometry.area
 min_area = gdf['area'].min()
 print(min_area)
 # 删除所有面积等于最小面积的单元
-gdf_filtered = gdf[gdf['area'] > 100000*min_area]
+gdf_filtered = gdf[gdf['area'] > 150*min_area]
 
 
 gdf_filtered = gdf_filtered.drop(columns='area')
 
 # 保存处理后的结果
-gdf_filtered.to_file(r'C:\Users\龙儿璨\Desktop\湿地制图\label\WetlandXJ_202308_T43_PW_34label11quxiaokuan.shp')
+gdf_filtered.to_file(r'E:\data001\test\insarDA000.shp')
 
 

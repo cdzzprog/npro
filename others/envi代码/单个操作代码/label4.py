@@ -5,12 +5,12 @@ from shapely.geometry import shape
 from rasterio.features import shapes
 
 # 打开多波段TIF文件并读取其坐标参考系
-with rasterio.open(r'C:\Users\龙儿璨\Desktop\湿地制图\11.9\WetlandXJ_202308_T45_AW_98.tif') as src:
+with rasterio.open(r'E:\data001\test\insar\insare10.tif') as src:
     
-    band1 = src.read(4).astype('float32')  # 读取波段1并转换为float32类型
+    band1 = src.read(1).astype('float32')  # 读取波段1并转换为float32类型
     
     # 生成掩膜：提取波段1中值在58到67之间的区域
-    target_mask = np.where((band1 >= 52) & (band1 <=75), 1, 0)
+    target_mask = np.where((band1 >= -132) & (band1 <=-10), 1, 0)
     
     # 获取栅格图像的原始坐标参考系和仿射变换
     transform = src.transform
@@ -27,11 +27,11 @@ for geom, value in mask_shapes:
 
 # 创建GeoDataFrame并保存为矢量文件 (Shapefile)，使用从图像中提取的坐标系
 gdf = gpd.GeoDataFrame(geometry=geoms, crs=crs)  # 动态获取CRS并应用
-gdf['label'] = 4  # 新增字段label并赋值为4
+gdf['label'] = 0  # 新增字段label并赋值为4
 gdf = gdf[['label', 'geometry']]
 
 # 输出为Shapefile
-gdf.to_file(r'C:\Users\龙儿璨\Desktop\湿地制图\11.9\119label\WetlandXJ_202308_T45_AW_98label4.shp')
+gdf.to_file(r'E:\data001\test\insarDA0.shp')
 
 #AW88  54-78
 #AW79  54-70  53-70 40-90

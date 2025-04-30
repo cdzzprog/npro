@@ -15,7 +15,7 @@ def convert_to_tiff(input_file, output_file):
     root_ds = None
 
 # 示例调用
-input_file_path = r'E:/sentinel2/weiyi/newyyyy/S2A_MSIL2A_20240912T061001_N0511_R134_T42SWJ_20240912T101100.SAFE/'
-output_file_path = r'E:/sentinel2/weiyi/newyyyy/S2A_MSIL2A_20240912T061001_N0511_R134_T42SWJ_20240912T101100.SAFE/'
+input_file_path = r'E:/sentinel2/pamier/2022.72xia/S2A_MSIL2A_20220722T055651_N0510_R091_T43SBB_20240713T135835.SAFE/'
+output_file_path = r'E:/sentinel2/pamier/2022.72xia/S2A_MSIL2A_20220722T055651_N0510_R091_T43SBB_20240713T135835.SAFE/'
 convert_to_tiff(input_file_path, output_file_path)
 print("转换完成！")
