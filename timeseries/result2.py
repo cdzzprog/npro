@@ -677,10 +677,10 @@ if __name__ == "__main__":
         print(f"Timestep {t+1}: MAE={step_metrics['MAE']:.6f}, RMSE={step_metrics['RMSE']:.6f}, MAPE={step_metrics['MAPE']:.4f}%, R²={step_metrics['R2']:.6f}")
     
     # 保存时间步指标
-    save_metrics_to_csv(metrics_by_step, 'metrics_by_step.csv')
+    # save_metrics_to_csv(metrics_by_step, 'metrics_by_step.csv')
     
     # 绘制时间步指标变化图
-    plot_metrics_by_timestep(metrics_by_step, 'metrics_by_timestep.png')
+    # plot_metrics_by_timestep(metrics_by_step, 'metrics_by_timestep.png')
     
     # # 3. 各点指标计算（只计算前1000个点，避免内存问题）
     # print("\nCalculating point metrics...")
