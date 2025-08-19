@@ -134,48 +134,48 @@ class App(ctk.CTk):
 
     
       # 判断用户名是否只包含数字
-    def is_valid_username(username):
-        return username.isdigit()
+    # def is_valid_username(username):
+    #     return username.isdigit()
 
-    # 判断密码是否合法（这里只允许字母和数字，不允许特殊字符）
-    def is_valid_password(password):
-        # 只允许字母和数字，其他特殊字符不允许
-        return bool(re.match("^[A-Za-z0-9]*$", password))
+    # # 判断密码是否合法（这里只允许字母和数字，不允许特殊字符）
+    # def is_valid_password(password):
+    #     # 只允许字母和数字，其他特殊字符不允许
+    #     return bool(re.match("^[A-Za-z0-9]*$", password))
 
-    # 注册函数
-    def registernew(username, password):
-        # 判断用户名是否为空
-        if not username.strip():
-            return "用户名不能为空！"
+    # # 注册函数
+    # def registernew(username, password):
+    #     # 判断用户名是否为空
+    #     if not username.strip():
+    #         return "用户名不能为空！"
         
-        # 判断用户名是否符合要求（只能是数字）
-        if not is_valid_username(username):
-            return "用户名只能包含数字！"
+    #     # 判断用户名是否符合要求（只能是数字）
+    #     if not is_valid_username(username):
+    #         return "用户名只能包含数字！"
         
-        # 判断密码是否为空
-        if not password.strip():
-            return "密码不能为空！"
+    #     # 判断密码是否为空
+    #     if not password.strip():
+    #         return "密码不能为空！"
         
-        # 判断密码是否合法（不能有非法字符）
-        if not is_valid_password(password):
-            return "密码包含非法字符，只能包含字母和数字！"
+    #     # 判断密码是否合法（不能有非法字符）
+    #     if not is_valid_password(password):
+    #         return "密码包含非法字符，只能包含字母和数字！"
         
-        # 判断用户名是否已被注册
-        if username in user_data:
-            return "该用户名已被注册！"
+    #     # 判断用户名是否已被注册
+    #     if username in user_data:
+    #         return "该用户名已被注册！"
         
-        # 注册成功
-        user_data[username] = password
-        return "注册成功！"
+    #     # 注册成功
+    #     user_data[username] = password
+    #     return "注册成功！"
 
-    # 登录函数
-    def loginnew(username, password):
-        if username not in user_data:
-            return "用户名不存在！"
-        elif user_data[username] != password:
-            return "密码错误！"
-        else:
-            return "登录成功！"
+    # # 登录函数
+    # def loginnew(username, password):
+    #     if username not in user_data:
+    #         return "用户名不存在！"
+    #     elif user_data[username] != password:
+    #         return "密码错误！"
+    #     else:
+    #         return "登录成功！"
 
 
 
@@ -198,19 +198,13 @@ class App(ctk.CTk):
         return image_paths, labels
 
     
-    def split_data(image_paths, labels, test_size=0.2, val_size=0.1):
-        train_paths, temp_paths, train_labels, temp_labels = train_test_split(
-            image_paths, labels, test_size=test_size + val_size, random_state=42
-        )
- 
-        val_paths, test_paths, val_labels, test_labels = train_test_split(
-            temp_paths, temp_labels, test_size=0.5, random_state=42
-        )
-        
-        return train_paths, val_paths, test_paths, train_labels, val_labels, test_labels
+
+
+
 
 
     def index_event(self):
+
         """
         跳转到主页事件处理函数
         """
